@@ -4,7 +4,7 @@ import Header from "../components/common/Header";
 import StatCard from "../components/common/StatCard";
 
 import { AlertTriangle, BarChart2, DollarSign, Fuel, Package, SwatchBook, TrendingUp, Zap } from "lucide-react";
-import ProductsTable from "../components/insights/ProductsTable";
+import ProductsTable from "../components/insights/StateTable";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import TrendChart from "../components/insights/TrendChart";
 import BandedChart from "../components/insights/BandedChart";
@@ -12,7 +12,7 @@ import BandedChart from "../components/insights/BandedChart";
 const PowerPlantInsights = () => {
 	return (
 		<div className='flex-1 overflow-auto relative z-10'>
-			<Header title='insights' />
+			<Header title='Insights Dashboard' />
 
 			<main className='max-w-7xl mx-auto py-6 px-4 lg:px-8'>
 				{/* STATS */}

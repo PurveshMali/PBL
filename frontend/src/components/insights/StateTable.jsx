@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Edit, Search, Trash2 } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 import { ResponsiveContainer } from "recharts";
 
@@ -19,7 +19,7 @@ const STATE_DATA = [
 ];
 
 
-const ProductsTable = () => {
+const StateTable = () => {
 	const [searchTerm, setSearchTerm] = useState("");
 	const [filteredProducts, setFilteredProducts] = useState(STATE_DATA);
 
@@ -41,7 +41,7 @@ const ProductsTable = () => {
 			transition={{ delay: 0.2 }}
 		>
 			<div className='flex justify-between items-center mb-6'>
-				<h2 className='text-xl font-semibold text-gray-100'>Product List</h2>
+				<h2 className='text-xl font-semibold text-gray-100'>Power Plants List</h2>
 				
 					<div className='relative'>
 					<input
@@ -111,4 +111,4 @@ const ProductsTable = () => {
 		</motion.div>
 	);
 };
-export default ProductsTable;
+export default StateTable;

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route } from 'react-router-dom'
 import OverviewPage from './pages/OverviewPage'
-import SideBar from './components/SideBar'
+import SideBar from './components/common/Sidebar'
 import PowerPlantInsights from './pages/PowerPlantInsights'
 import ImpactPage from './pages/ImpactPage'
 

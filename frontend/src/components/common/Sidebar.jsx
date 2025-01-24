@@ -2,14 +2,10 @@ import {
   Axis3d,
   BarChart2,
   BookText,
-  DollarSign,
   Menu,
   Settings,
-  ShoppingBag,
-  ShoppingCart,
   Target,
   TrendingUp,
-  Users,
   Waypoints,
 } from "lucide-react";
 import React, { useState } from "react";
@@ -21,7 +17,7 @@ const SIDEBAR_ITEMS = [
   { name: "Insights", icon: Waypoints, color: "#8b5cf6", href: "/insights" },
   { name: "Impact", icon: Axis3d, color: "#ec4899", href: "/impacts" },
   { name: "Predictions", icon: Target, color: "#10b981", href: "/predictions" },
-  { name: "Reports", icon: BookText , color: "#f59e0b", href: "/reports" },
+  { name: "Reports", icon: BookText, color: "#f59e0b", href: "/reports" },
   { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },
   { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
 ];
@@ -35,7 +31,7 @@ const SideBar = () => {
       }
       animate={{ width: isSidebarOpen ? 256 : 80 }}
     >
-      <div className="h-full bg-gray-800 bg-opacity-50 backdrop-blur-md p-4 flex flex-col border-gray-700">
+      <div className='h-full bg-gray-800 bg-opacity-50 backdrop-blur-md p-4 flex flex-col border-r border-gray-700'>
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -50,21 +46,23 @@ const SideBar = () => {
           {SIDEBAR_ITEMS.map((item, index) => (
             <Link key={item.href} to={item.href}>
               <motion.div className="flex items-center p-4 text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors mb-2">
-                <item.icon size={20} style={{ color: item.color, minWidth: "20px" }}/>
+                <item.icon
+                  size={20}
+                  style={{ color: item.color, minWidth: "20px" }}
+                />
                 <AnimatePresence>
-                    {isSidebarOpen && (
-                        <motion.span
-                    className="ml-4 whitespace-nowrap"
-                    initial={{ opacity: 0, x: 0 }}
-                    animate={{ opacity: 1, x: "auto" }}
-                    exit={{ opacity: 0, width: 0 }}
-                    transition={{ duration: 0.2 , delay: 0.3 }}
+                  {isSidebarOpen && (
+                    <motion.span
+                      className="ml-4 whitespace-nowrap"
+                      initial={{ opacity: 0, x: 0 }}
+                      animate={{ opacity: 1, x: "auto" }}
+                      exit={{ opacity: 0, width: 0 }}
+                      transition={{ duration: 0.2, delay: 0.3 }}
                     >
-                    {item.name}
+                      {item.name}
                     </motion.span>
-                )}
+                  )}
                 </AnimatePresence>
-
               </motion.div>
             </Link>
           ))}
