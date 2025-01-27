@@ -4,6 +4,7 @@ import OverviewPage from './pages/OverviewPage'
 import SideBar from './components/common/Sidebar'
 import PowerPlantInsights from './pages/PowerPlantInsights'
 import ImpactPage from './pages/ImpactPage'
+import SettingsPage from './pages/SettingsPage'
 
 const App = () => {
   console.log("object")
@@ -22,6 +23,7 @@ const App = () => {
         <Route path='/' element={<OverviewPage />} />
         <Route path='/insights' element={<PowerPlantInsights />} />
         <Route path='/impacts' element={<ImpactPage />} />
+        <Route path='/settings' element={<SettingsPage />} />
       </Routes>
     </div>
   )
