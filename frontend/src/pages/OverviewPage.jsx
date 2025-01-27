@@ -5,7 +5,8 @@ import StatCard from "../components/common/StatCard";
 import { motion } from "framer-motion";
 import EmissionOverviewChart from "../components/overview/EmissionOverviewChart";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesChannelChart from "../components/overview/StateEmission";
+import StateEmission from "../components/overview/StateEmission";
+
 
 const OverviewPage = () => {
   return (
@@ -50,7 +51,7 @@ const OverviewPage = () => {
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-8'>
 					<EmissionOverviewChart />
           <CategoryDistributionChart />
-          <SalesChannelChart />
+          <StateEmission />
 				</div>
       </main>
     </div>

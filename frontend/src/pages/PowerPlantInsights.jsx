@@ -5,7 +5,6 @@ import StatCard from "../components/common/StatCard";
 
 import { AlertTriangle, BarChart2, DollarSign, Fuel, Package, SwatchBook, TrendingUp, Zap } from "lucide-react";
 import ProductsTable from "../components/insights/StateTable";
-import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import TrendChart from "../components/insights/TrendChart";
 import BandedChart from "../components/insights/BandedChart";
 

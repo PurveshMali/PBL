@@ -13,7 +13,7 @@ import {
 import { useState } from "react";
 
 const healthImpactData = [
-  { month: "Jan", respiratoryDiseases: 420, deathRate: 20, fuel: "Coal" },
+  { month: "Jan", respiratoryDiseases: 420, deathRate: 200, fuel: "Coal" },
   { month: "Jan", respiratoryDiseases: 310, deathRate: 8, fuel: "Oil" },
   { month: "Jan", respiratoryDiseases: 180, deathRate: 5, fuel: "Gas" },
   { month: "Jan", respiratoryDiseases: 50, deathRate: 1, fuel: "Renewable" },
