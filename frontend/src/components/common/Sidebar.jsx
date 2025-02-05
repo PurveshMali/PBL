@@ -13,7 +13,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
 const SIDEBAR_ITEMS = [
-  { name: "Overview", icon: BarChart2, color: "#6366f1", href: "/" },
+  { name: "Overview", icon: BarChart2, color: "#6366f1", href: "/overview" },
   { name: "Insights", icon: Waypoints, color: "#8b5cf6", href: "/insights" },
   { name: "Impact", icon: Axis3d, color: "#ec4899", href: "/impacts" },
   { name: "Predictions", icon: Target, color: "#10b981", href: "/predictions" },
