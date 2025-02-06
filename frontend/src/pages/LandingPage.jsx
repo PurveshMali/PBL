@@ -16,19 +16,6 @@ const LandingPage = () => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 1 }}
     >
-      {/* Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      >
-        <source
-          src="/frontend/src/components/common/footage1.mp4"
-          type="video/mp4"
-        />
-        Your browser does not support the video tag.
-      </video>
 
       {/* Overlay to darken video */}
       <div className="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
@@ -40,9 +27,9 @@ const LandingPage = () => {
           <span className="text-xl font-bold">PowerChoice</span>
         </div>
         <nav>
-          <button className="px-4 py-2 text-sm font-medium text-green-300 hover:text-green-100 transition-colors">
+          <Link to="/login" className="px-4 py-2 text-sm font-medium text-green-300 hover:text-green-100 transition-colors">
             Login
-          </button>
+          </Link>
           <button className="ml-4 px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
             Register
           </button>
