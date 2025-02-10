@@ -8,6 +8,8 @@ import SettingsPage from './pages/SettingsPage'
 import LandingPage from './pages/LandingPage'
 import SplashCursor from './animations/SplashCursor'
 import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import ForgotPassword from './pages/ForgotPassword'
 
 const App = () => {
 
@@ -21,14 +23,16 @@ const App = () => {
 
     </div>
     {/* <SplashCursor /> */}
-    {location.pathname != "/" && location.pathname != "/login" && <SideBar />}
+    {location.pathname != "/" && location.pathname != "/login" && location.pathname != "/register" && location.pathname != "/forgot-password" && <SideBar />}
       <Routes>
         <Route path='/' element={<LandingPage />} />
         <Route path='/login' element={<LoginPage />} />
         <Route path='/overview' element={<OverviewPage />} />
         <Route path='/insights' element={<PowerPlantInsights />} />
         <Route path='/impacts' element={<ImpactPage />} />
-        <Route path='/settings' element={<SettingsPage />} />
+        <Route path='/settings' element={<SettingsPage />} /> 
+        <Route path='/register' element={<RegisterPage />} />
+        <Route path='/forgot-password' element={<ForgotPassword />} />
       </Routes>
     </div>
   )
