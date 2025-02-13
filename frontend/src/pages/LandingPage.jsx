@@ -12,13 +12,18 @@ const LandingPage = () => {
   return (
     <motion.div
       className="min-h-screen bg-transperant text-gray-100 flex flex-col z-10 w-full relative"
-      initial={{ opacity: 0, y: 50 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 1 }}
+      
     >
 
       {/* Overlay to darken video */}
       <div className="absolute inset-0 bg-black bg-opacity-50 z-0"></div>
+
+      <motion.div
+      className="min-h-screen flex flex-col z-10 w-full relative"
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1 }}
+      >
 
       {/* Header */}
       <header className="p-4 flex justify-between items-center relative z-10">
@@ -30,9 +35,9 @@ const LandingPage = () => {
           <Link to="/login" className="px-4 py-2 text-sm font-medium text-green-300 hover:text-green-100 transition-colors">
             Login
           </Link>
-          <button className="ml-4 px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
+          <Link to="/register" className="ml-4 px-4 py-2 text-sm font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
             Register
-          </button>
+          </Link>
         </nav>
       </header>
 
@@ -71,6 +76,7 @@ const LandingPage = () => {
       <footer className="p-4 text-center text-sm text-gray-500 relative z-10">
         © 2025 PowerChoice. All rights reserved.
       </footer>
+      </motion.div>
     </motion.div>
   );
 };

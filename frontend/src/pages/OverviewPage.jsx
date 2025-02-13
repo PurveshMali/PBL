@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // To redirect the user if not authenticated
 import Header from "../components/common/Header";
 import {
   Axis3d,
@@ -15,8 +16,34 @@ import EmissionOverviewChart from "../components/overview/EmissionOverviewChart"
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
 import StateEmission from "../components/overview/StateEmission";
 import SideBar from "../components/common/Sidebar";
+import axios from "axios"; // To make requests to backend
 
 const OverviewPage = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("You need to be logged in to access this page, redirecting to login...");
+        navigate("/login");
+      } else {
+        try {
+          // Validate token with backend
+          await axios.get("http://localhost:3000/api/auth/validate", {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+        } catch (error) {
+          alert("Invalid or expired token, redirecting to login...");
+          localStorage.removeItem("token"); // Clear invalid token
+          navigate("/login");
+        }
+      }
+    };
+
+    checkAuth();
+  }, [navigate]);
+
   return (
     <div className="flex-1 overflow-auto relative z-10">
       <Header title="Overview Dashboard" />
