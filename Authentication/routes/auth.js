@@ -63,7 +63,6 @@ router.get("/profile", async (req, res) => {
       if (err) return res.status(403).json({ message: "Invalid token" });
       const user = await User.findById(decoded.userId);
       if (!user) return res.status(404).json({ message: "User not found" });
-      console.log(user);
       res.json(user);
     } );
   } catch (error) {
