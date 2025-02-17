@@ -6,7 +6,7 @@ import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import Loader from "../components/common/Loader"
+import { Loader, Loader2 } from "lucide-react"
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" })
@@ -95,7 +95,7 @@ const LoginPage = () => {
             className="bg-green-600 hover:bg-green-700 w-full text-white font-bold py-2 sm:py-3 px-4 rounded-3xl transition duration-200 flex justify-center items-center"
             disabled={isLoading}
           >
-            {isValidating ? <Loader /> : isLoading ? "Logging in..." : "Login"}
+            {isLoading ? <Loader className="mr-2 animate-spin" /> : "Login"}
           </button>
           <Link
             className="text-sm sm:text-base text-gray-400 hover:text-white transition duration-200"

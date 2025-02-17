@@ -1,13 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"; // To redirect the user if not authenticated
 import Header from "../components/common/Header";
 import {
-  Axis3d,
   BarChart2,
   Fuel,
-  ShoppingBag,
   SwatchBook,
-  Users,
   Zap,
 } from "lucide-react";
 import StatCard from "../components/common/StatCard";
@@ -20,6 +17,7 @@ import axios from "axios"; // To make requests to backend
 
 const OverviewPage = () => {
   const navigate = useNavigate();
+  const [isValidUser, setIsValidUser] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -67,7 +65,12 @@ const OverviewPage = () => {
             value="1,234"
             color="#8B5CF6"
           />
-          <StatCard name="Fuel Types" icon={Fuel} value="4-5" color="#EC4899" />
+          <StatCard 
+            name="Fuel Types" 
+            icon={Fuel} 
+            value="4-5" 
+            color="#EC4899" 
+          />
           <StatCard
             name="Conversion Rate"
             icon={BarChart2}

@@ -4,6 +4,7 @@ import TrueFocus from "../animations/TrueFocus";
 import SplitText from "../animations/SplitText";
 import Magnet from "../animations/Magnet";
 import { Link } from "react-router-dom";
+import Button from "../animations/Button";
 
 const LandingPage = () => {
   const handleAnimationComplete = () => {
@@ -63,13 +64,14 @@ const LandingPage = () => {
           onLetterAnimationComplete={handleAnimationComplete}
         />
 
-<Magnet padding={500} disabled={false} magnetStrength={50}>
+{/* <Magnet padding={500} disabled={false} magnetStrength={50}>
         <button className="px-6 py-3 text-lg mt-10 font-medium bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors">
         
           <Link to="/login">Get Started</Link>
         
         </button>
-        </Magnet>
+        </Magnet> */}
+        <Button />
       </main>
 
       {/* Footer */}

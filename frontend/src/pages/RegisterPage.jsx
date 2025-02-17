@@ -4,6 +4,7 @@ import { useState } from "react"
 import { motion } from "framer-motion"
 import axios from "axios"
 import { Link, useNavigate } from "react-router-dom"
+import { Loader } from "lucide-react"
 
 const RegisterPage = () => {
   const navigate = useNavigate()
@@ -107,10 +108,10 @@ const RegisterPage = () => {
           </div>
 
           <button
-            className="bg-green-600 hover:bg-green-700 w-full text-white font-bold py-2 sm:py-3 px-4 rounded-3xl transition duration-200"
+            className="bg-green-600 hover:bg-green-700 w-full text-white font-bold py-2 sm:py-3 px-4 rounded-3xl transition duration-200 items-center justify-center flex"
             disabled={isLoading}
           >
-            {isLoading ? "Registering..." : "Register"}
+            {isLoading ? <Loader className="animate-spin" size={24} color="white" overlinePosition={"center"} underlinePosition={"center"}/> : "Register"}
           </button>
           <p className="text-sm sm:text-base text-gray-400 hover:text-white transition duration-200 text-center mt-4">
             Already have an account?{" "}
