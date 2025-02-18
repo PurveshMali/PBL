@@ -5,12 +5,13 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import LoaderComponent from "../common/LoaderComponent";
+import { motion } from "framer-motion";
 
 const Profile = () => {
   const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(false);  // For managing loader state
-  const [showModal, setShowModal] = useState(false);  // To manage the confirmation modal state
-  const [isLoggingOut, setIsLoggingOut] = useState(false);  // To track if logout is in progress
+  const [loading, setLoading] = useState(false); 
+  const [showModal, setShowModal] = useState(false);  
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -44,8 +45,9 @@ const Profile = () => {
       localStorage.removeItem("token");
       toast.success("Logged out successfully!", {
         position: "top-right",
-        autoClose: 2000,  // Toast will show for 2 seconds
+        autoClose: 2000,  
         hideProgressBar: false,
+        style: { zIndex: 50 }, 
       });
 
       setTimeout(() => {
@@ -67,8 +69,17 @@ const Profile = () => {
     <>
       {/* Confirmation Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg w-72 text-center">
+        <div 
+          
+
+
+        className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50">
+          <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          transition={{ duration: 0.3, ease: "easeInOut" }}
+          className="bg-gray-900 p-6 rounded-lg shadow-lg w-72 text-center">
             <p className="text-lg font-semibold mb-4">Are you sure you want to log out?</p>
             <div className="flex justify-between">
               <button
@@ -79,12 +90,12 @@ const Profile = () => {
               </button>
               <button
                 onClick={handleLogout}
-                className="bg-indigo-600 text-white py-2 px-4 rounded hover:bg-indigo-700"
+                className="bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700"
               >
                 Log Out
               </button>
             </div>
-          </div>
+          </motion.div>
         </div>
       )}
 
@@ -117,6 +128,7 @@ const Profile = () => {
         </button>
 
         <ToastContainer
+        style={{ zIndex: 50 }}  
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}
