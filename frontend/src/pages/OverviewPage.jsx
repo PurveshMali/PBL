@@ -33,7 +33,7 @@ const OverviewPage = () => {
           });
         } catch (error) {
           alert("Invalid or expired token, redirecting to login...");
-          localStorage.removeItem("token"); // Clear invalid token
+          localStorage.removeItem("token"); //Clear invalid token
           navigate("/login");
         }
       }

@@ -36,14 +36,14 @@ const RegisterPage = () => {
     setFormErrors((prevErrors) => {
       const errors = { ...prevErrors };
   
-      if (name === "firstName" && newValue.length > 20) {
-        errors.firstName = "Max 20 characters allowed.";
+      if (name === "firstName" && newValue.length > 25) {
+        errors.firstName = "Max 25 characters allowed.";
       } else {
         delete errors.firstName;
       }
   
-      if (name === "lastName" && newValue.length > 20) {
-        errors.lastName = "Max 20 characters allowed.";
+      if (name === "lastName" && newValue.length > 25) {
+        errors.lastName = "Max 25 characters allowed.";
       } else {
         delete errors.lastName;
       }

@@ -80,7 +80,7 @@ const Profile = () => {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.3, ease: "easeInOut" }}
           className="bg-gray-900 p-6 rounded-lg shadow-lg w-72 text-center">
-            <p className="text-lg font-semibold mb-4">Are you sure you want to log out?</p>
+            <p className="text-base font-semibold mb-4">Are you sure you want to log out?</p>
             <div className="flex justify-between">
               <button
                 onClick={() => setShowModal(false)}
@@ -100,7 +100,7 @@ const Profile = () => {
       )}
 
       {/* Loader Component for full-screen loader after logout */}
-      {isLoggingOut && <LoaderComponent message="Logging out..." />}
+      {isLoggingOut && <LoaderComponent message="Logging out" />}
 
       <SettingSection icon={User} title={"Profile"}>
         <div className="flex flex-col sm:flex-row items-center mb-6">

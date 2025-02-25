@@ -11,8 +11,8 @@ from prophet import Prophet
 
 app = Flask(__name__)
 
-MODEL_PATH = "./so2_trained_model_india.pkl"
-DATA_PATH = "./so2_data_india.csv"
+MODEL_PATH = "./so2_trained_model.pkl"
+DATA_PATH = "./so2_data.csv"
 
 # -------------------------------
 # 1. Data Generation & Preprocessing (Indian Standards)
@@ -84,17 +84,21 @@ def preprocess_data():
 
 class HybridModel:
     def __init__(self):
-        self.prophet = Prophet(seasonality_mode='multiplicative')
+        self.prophet_models = {}  # Store separate Prophet models for each fuel type
         self.xgb = XGBRegressor(n_estimators=300, learning_rate=0.01)
         self.preprocessor = None
 
     def fit(self, df):
-        prophet_df = df[['date', 'so2_emissions']].rename(columns={'date': 'ds', 'so2_emissions': 'y'})
-        self.prophet.fit(prophet_df)
-        prophet_forecast = self.prophet.predict(prophet_df)
+        fuel_types = df['fuel_type'].unique()
+
+        for fuel in fuel_types:
+            subset = df[df['fuel_type'] == fuel][['date', 'so2_emissions']].rename(columns={'date': 'ds', 'so2_emissions': 'y'})
+            model = Prophet(seasonality_mode='multiplicative')
+            model.fit(subset)
+            self.prophet_models[fuel] = model
 
         X = df.drop(['so2_emissions', 'date'], axis=1)
-        y_residuals = df['so2_emissions'] - prophet_forecast['yhat'].values
+        y = df['so2_emissions']
 
         self.preprocessor = ColumnTransformer([
             ('num', StandardScaler(), ['year', 'month', 'fuel_cost', 'fuel_cost_lag1', 'so2_rolling_avg']),
@@ -102,18 +106,25 @@ class HybridModel:
         ])
         X_processed = self.preprocessor.fit_transform(X)
 
-        self.xgb.fit(X_processed, y_residuals)
+        self.xgb.fit(X_processed, y)
         print("Hybrid model trained successfully.")
 
     def predict(self, df):
-        prophet_df = df[['date']].rename(columns={'date': 'ds'})
-        prophet_forecast = self.prophet.predict(prophet_df)
+        df['ds'] = df['date']
+        fuel_type = df.iloc[0]['fuel_type']
 
-        X = df.drop(['date'], axis=1)
+        if fuel_type in self.prophet_models:
+            prophet_model = self.prophet_models[fuel_type]
+            prophet_forecast = prophet_model.predict(df[['ds']])
+            prophet_pred = prophet_forecast['yhat'].values
+        else:
+            prophet_pred = np.zeros(len(df))
+
+        X = df.drop(['date', 'ds'], axis=1)
         X_processed = self.preprocessor.transform(X)
         xgb_pred = self.xgb.predict(X_processed)
 
-        return prophet_forecast['yhat'].values + xgb_pred
+        return prophet_pred + xgb_pred
 
 # -------------------------------
 # 3. Training & Saving the Model
@@ -149,10 +160,8 @@ def predict():
 
     df = pd.DataFrame([data])
 
-    # Convert date parts to datetime
     df['date'] = pd.to_datetime(f"{data['year']}-{data['month']}-28")
 
-    # Add required columns
     df['fuel_cost_lag1'] = df['fuel_cost']
     df['so2_rolling_avg'] = 100
 
@@ -169,14 +178,3 @@ def train():
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-# --------------------------------
-# Sample input for prediction:
-# --------------------------------
-# {
-#     "year": 2027,
-#     "month": 2,
-#     "fuel_type": "so2",
-#     "fuel_cost": 1200,
-#     "region": "North"
-# }
