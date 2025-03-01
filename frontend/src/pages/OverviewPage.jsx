@@ -1,50 +1,64 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // To redirect the user if not authenticated
+import { useNavigate } from "react-router-dom";
 import Header from "../components/common/Header";
-import {
-  BarChart2,
-  Fuel,
-  SwatchBook,
-  Zap,
-} from "lucide-react";
+import { BarChart2, Fuel, SwatchBook, Zap } from "lucide-react";
 import StatCard from "../components/common/StatCard";
 import { motion } from "framer-motion";
 import EmissionOverviewChart from "../components/overview/EmissionOverviewChart";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import StateEmission from "../components/overview/StateEmission";
-import SideBar from "../components/common/Sidebar";
-import axios from "axios"; // To make requests to backend
+import SalesChannelChart from "../components/overview/StateEmission";
+import axios from "axios";
 
 const OverviewPage = () => {
   const navigate = useNavigate();
   const [isValidUser, setIsValidUser] = useState(false);
+  const [totalValue, setTotalValue] = useState(0); // ✅ Default 0 instead of null
+  const [totalPlants, setTotalPlants] = useState(0);
 
+  // ✅ Check authentication when the page loads
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("You need to be logged in to access this page, redirecting to login...");
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) throw new Error("No token found");
+
+        await axios.get("http://localhost:3000/api/auth/validate", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setIsValidUser(true);
+      } catch (error) {
+        alert("Invalid session! Redirecting to login...");
+        localStorage.removeItem("token");
         navigate("/login");
-      } else {
-        try {
-          // Validate token with backend
-          await axios.get("http://localhost:3000/api/auth/validate", {
-            headers: { Authorization: `Bearer ${token}` },
-          });
-        } catch (error) {
-          alert("Invalid or expired token, redirecting to home...");
-          localStorage.removeItem("token"); //Clear invalid token
-          navigate("/");
-        }
       }
     };
 
     checkAuth();
   }, [navigate]);
 
+  // ✅ Optimized Fetch Data
+  useEffect(() => {
+    const fetchEmissionData = async () => {
+      try {
+        const [emissionRes, plantsRes] = await Promise.all([
+          axios.get("http://127.0.0.1:5000/api/totalemmision"),
+          axios.get("http://127.0.0.1:5000/api/totalplants"),
+        ]);
+
+        setTotalValue(emissionRes.data);
+        setTotalPlants(plantsRes.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchEmissionData();
+  }, []);
+
   return (
     <div className="flex-1 overflow-auto relative z-10">
-      <Header title="Overview Dashboard" />
+      <Header title="Overview" />
 
       <main className="max-w-7xl mx-auto py-6 px-4 lg:px-8">
         <motion.div
@@ -56,33 +70,23 @@ const OverviewPage = () => {
           <StatCard
             name="Overall India Emission"
             icon={Zap}
-            value="2,693 MW"
+            value={`${totalValue || "Loading..."} mg/Nm3`} // ✅ Cleaner format
             color="#6366F1"
           />
           <StatCard
             name="Total Plants Analyze"
             icon={SwatchBook}
-            value="1,234"
+            value={totalPlants || "Loading..."}
             color="#8B5CF6"
           />
-          <StatCard 
-            name="Fuel Types" 
-            icon={Fuel} 
-            value="4-5" 
-            color="#EC4899" 
-          />
-          <StatCard
-            name="Conversion Rate"
-            icon={BarChart2}
-            value="12.5%"
-            color="#10B981"
-          />
+          <StatCard name="Fuel Types" icon={Fuel} value="4-5" color="#EC4899" />
+          <StatCard name="Conversion Rate" icon={BarChart2} value="12.5%" color="#10B981" />
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <EmissionOverviewChart />
           <CategoryDistributionChart />
-          <StateEmission />
+          <SalesChannelChart />
         </div>
       </main>
     </div>

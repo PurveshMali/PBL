@@ -1,0 +1,79 @@
+Country,Oil,Natural Gas,Coal,Note of Coal,Nuclear Energy,Hydro Electricity,Note of Hydro Electricity,Renewables,Note of Renewables,Total
+US,913.3,635.8,332.1,NA,191.7,67.1,NA,94.8,NA,2234.9
+Canada,108.6,99.5,18.6,NA,21.9,89.8,NA,10.3,NA,348.7
+Mexico,86.8,75.3,13.1,NA,2.5,7.2,NA,4.4,NA,189.3
+Total North America,1108.6,810.7,363.8,NA,216.1,164.1,NA,109.5,NA,2772.8
+Argentina,31.6,41.7,1.1,NA,1.4,9.4,NA,0.7,NA,85.9
+Brazil,135.6,33,16.5,NA,3.6,83.6,NA,22.2,NA,294.4
+Chile,18.3,5.2,6.7,NA,NA,5.1,NA,3,NA,38.3
+Colombia,16.7,8.6,4,NA,NA,13,NA,0.4,NA,42.6
+Ecuador,11.3,0.5,NA,NA,NA,4.5,NA,0.1,NA,16.5
+Peru,12.1,5.8,1,NA,NA,6.5,NA,0.6,NA,25.9
+Trinidad & Tobago,2.2,15.9,NA,NA,NA,NA,NA,NA,^,18.1
+Venezuela,24.2,32.4,0.3,NA,NA,17.4,NA,NA,^,74.2
+Other S. & Cent. America,66.8,6.1,3.2,NA,NA,22.9,NA,5.6,NA,104.7
+Total S. & Cent. America,318.8,149.1,32.7,NA,5,162.3,NA,32.6,NA,700.6
+Austria,13.4,7.7,3.2,NA,NA,8.8,NA,2.8,NA,35.9
+Belgium,32.2,14.1,2.9,NA,9.5,0.1,NA,3.5,NA,62.3
+Czech Republic,9.8,7.2,16,NA,6.4,0.4,NA,1.7,NA,41.6
+Finland,9.7,1.6,4.1,NA,5.1,3.3,NA,3.7,NA,27.6
+France,79.7,38.5,9.1,NA,90.1,11.1,NA,9.4,NA,237.9
+Germany,119.8,77.5,71.3,NA,17.2,4.5,NA,44.8,NA,335.1
+Greece,15.5,4.1,4.9,NA,NA,0.9,NA,2.2,NA,27.6
+Hungary,7.9,8.5,2.3,NA,3.6,NA,^,0.7,NA,23.2
+Italy,60.6,62,9.8,NA,NA,8.2,NA,15.5,NA,156
+Netherlands,40.8,31,9.1,NA,1.2,NA,^,4,NA,86.1
+Norway,10.1,3.9,0.8,NA,NA,32,NA,0.7,NA,47.5
+Poland,31.6,16.5,48.7,NA,NA,0.6,NA,4.8,NA,102.1
+Portugal,12.5,5.3,3.5,NA,NA,1.3,NA,3.7,NA,26.4
+Romania,10,10.2,5.7,NA,2.6,3.2,NA,2.2,NA,33.9
+Switzerland,10.9,2.7,0.1,NA,4.6,7.2,NA,0.8,NA,26.4
+Spain,64.8,27.5,13.4,NA,13.1,4.2,NA,15.7,NA,138.8
+Sweden,15.6,0.7,1.9,NA,14.9,14.6,NA,6.8,NA,54.4
+Turkey,48.8,44.4,44.6,NA,NA,13.2,NA,6.6,NA,157.7
+United Kingdom,76.3,67.7,9,NA,15.9,1.3,NA,21,NA,191.3
+Azerbaijan,4.4,9.1,NA,^,NA,0.4,NA,NA,^,13.9
+Belarus,6.7,15.5,0.9,NA,NA,0.1,NA,0.1,NA,23.2
+Kazakhstan,14.6,14,36.2,NA,NA,2.5,NA,0.1,NA,67.4
+Russian Federation,153,365.2,92.3,NA,46,41.5,NA,0.3,NA,698.3
+Turkmenistan,7.3,24.4,NA,NA,NA,NA,NA,NA,^,31.7
+Ukraine,10,25.6,24.6,NA,19.4,2,NA,0.4,NA,81.9
+Uzbekistan,3.3,35.8,1.2,NA,NA,2.7,NA,NA,^,43
+Other Europe & CIS,65.3,30.4,38,NA,8.7,22.7,NA,11,NA,176.1
+Total Europe & CIS,934.6,951.3,453.4,NA,258.4,187.1,NA,162.7,NA,2947.5
+Iran,84.6,184.4,0.9,NA,1.6,3.7,NA,0.1,NA,275.4
+Iraq,38.5,10.3,NA,NA,NA,0.5,NA,NA,^,49.2
+Israel,11.7,8.5,5.2,NA,NA,NA,^,0.4,NA,25.8
+Kuwait,20,19,0.2,NA,NA,NA,NA,NA,^,39.3
+Oman,9.3,20,0.1,NA,NA,NA,NA,NA,^,29.4
+Qatar,13.3,40.8,NA,NA,NA,NA,NA,NA,^,54.1
+Saudi Arabia,172.4,95.8,0.1,NA,NA,NA,NA,NA,^,268.3
+United Arab Emirates,45,62.1,1.6,NA,NA,NA,NA,0.1,NA,108.7
+Other Middle East,25.2,20.4,0.4,NA,NA,0.3,NA,0.6,NA,46.9
+Total Middle East,420,461.3,8.5,NA,1.6,4.5,NA,1.4,NA,897.2
+Algeria,19.5,33.4,NA,^,NA,NA,^,0.1,NA,53.2
+Egypt,39.7,48.1,0.2,NA,NA,3,NA,0.6,NA,91.6
+Morocco,13.1,1,4.5,NA,NA,0.3,NA,0.8,NA,19.6
+South Africa,28.8,3.9,82.2,NA,3.6,0.2,NA,2,NA,120.6
+Other Africa,95.2,35.5,6.2,NA,NA,25.6,NA,2.1,NA,164.5
+Total Africa,196.3,121.9,93.1,NA,3.6,29.1,NA,5.5,NA,449.5
+Australia,52.4,36,42.3,NA,NA,3.1,NA,5.7,NA,139.4
+Bangladesh,7.5,22.9,2.3,NA,NA,0.2,NA,0.1,NA,33
+China,608.4,206.7,1892.6,NA,56.2,261.5,NA,106.7,NA,3132.2
+China Hong Kong SAR,21.9,2.7,6.3,NA,NA,NA,NA,NA,^,30.9
+India,222.1,46.6,424,NA,8.5,30.7,NA,21.8,NA,753.7
+Indonesia,77.3,33.7,57.2,NA,NA,4.2,NA,2.9,NA,175.2
+Japan,188.3,100.7,120.5,NA,6.6,17.9,NA,22.4,NA,456.4
+Malaysia,36.9,36.8,20,NA,NA,5.6,NA,0.4,NA,99.6
+New Zealand,8.5,4.2,1.2,NA,NA,5.7,NA,2.4,NA,22.1
+Pakistan,29.2,35,7.1,NA,1.8,7,NA,0.8,NA,80.9
+Philippines,21.7,3.2,13.1,NA,NA,2.2,NA,3.1,NA,43.3
+Singapore,75.3,10.6,0.4,NA,NA,NA,NA,0.3,NA,86.5
+South Korea,129.3,42.4,86.3,NA,33.6,0.7,NA,3.6,NA,295.9
+Sri Lanka,5.3,NA,1.4,NA,NA,0.9,NA,0.1,NA,7.7
+Taiwan,49.2,19.1,39.4,NA,5.1,1.2,NA,1.2,NA,115.1
+Thailand,63.9,43.1,18.3,NA,NA,1.1,NA,3.4,NA,129.7
+Vietnam,23,8.1,28.2,NA,NA,15.9,NA,0.1,NA,75.3
+Other Asia Pacific,23.3,10,19.4,NA,NA,13.7,NA,0.1,NA,66.5
+Total Asia Pacific,1643.4,661.8,2780,NA,111.7,371.6,NA,175.1,NA,5743.6
+Total World,4621.9,3156,3731.5,NA,596.4,918.6,NA,486.8,NA,13511.3
