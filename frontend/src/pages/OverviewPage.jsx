@@ -32,9 +32,9 @@ const OverviewPage = () => {
             headers: { Authorization: `Bearer ${token}` },
           });
         } catch (error) {
-          alert("Invalid or expired token, redirecting to login...");
+          alert("Invalid or expired token, redirecting to home...");
           localStorage.removeItem("token"); //Clear invalid token
-          navigate("/login");
+          navigate("/");
         }
       }
     };

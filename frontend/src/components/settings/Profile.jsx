@@ -9,19 +9,24 @@ import { motion } from "framer-motion";
 
 const Profile = () => {
   const [user, setUser] = useState({});
-  const [loading, setLoading] = useState(false); 
-  const [showModal, setShowModal] = useState(false);  
+  const [loading, setLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
+  const [editProfile, setEditProfile] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [updatedUser, setUpdatedUser] = useState({});
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get("http://localhost:3000/api/auth/profile", {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
+        const { data } = await axios.get(
+          "http://localhost:3000/api/auth/profile",
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
         setUser(data);
         console.log(data);
       } catch (error) {
@@ -32,28 +37,31 @@ const Profile = () => {
   }, []);
 
   const handleLogoutConfirmation = () => {
-    setShowModal(true);  // Show the confirmation modal
+    setShowModal(true); // Show the confirmation modal
+  };
+
+  const handleEditProfileConfirmation = () => {
+    setEditProfile(true); // Show the confirmation modal
   };
 
   const handleLogout = async () => {
-    setShowModal(false);  // Close the confirmation modal
-    setIsLoggingOut(true);  // Start logging out process
-    setLoading(true);  // Show the loader
+    setShowModal(false); // Close the confirmation modal
+    setIsLoggingOut(true); // Start logging out process
+    setLoading(true); // Show the loader
 
     try {
       await axios.post("http://localhost:3000/api/auth/logout");
       localStorage.removeItem("token");
       toast.success("Logged out successfully!", {
         position: "top-right",
-        autoClose: 2000,  
+        autoClose: 2000,
         hideProgressBar: false,
-        style: { zIndex: 50 }, 
+        style: { zIndex: 50 },
       });
 
       setTimeout(() => {
-        navigate("/");  // Navigate to the home page after 2 seconds
-      }, 2000);  // Wait for 2 seconds before redirecting
-
+        navigate("/"); // Navigate to the home page after 2 seconds
+      }, 2000); // Wait for 2 seconds before redirecting
     } catch (error) {
       console.log("Error logging out:", error);
       toast.error("Error logging out!", {
@@ -65,22 +73,41 @@ const Profile = () => {
     }
   };
 
+  const handleProfileUpdate = async () => {
+    try {
+      await axios.put("http://localhost:3000/api/auth/profile", updatedUser);
+      toast.success("Profile updated successfully!");
+      setEditProfile(false);
+    } catch (error) {
+      console.log("Error updating profile:", error);
+      toast.error("Error updating profile!");
+    }
+  };
+
+  const handleChange = (e) => {
+    setUpdatedUser((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  }
+
+
+
   return (
     <>
       {/* Confirmation Modal */}
       {showModal && (
-        <div 
-          
-
-
-        className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50">
-          <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.3, ease: "easeInOut" }}
-          className="bg-gray-900 p-6 rounded-lg shadow-lg w-72 text-center">
-            <p className="text-base font-semibold mb-4">Are you sure you want to log out?</p>
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="bg-gray-900 p-6 rounded-lg shadow-lg w-72 text-center"
+          >
+            <p className="text-base font-semibold mb-4">
+              Are you sure you want to log out?
+            </p>
             <div className="flex justify-between">
               <button
                 onClick={() => setShowModal(false)}
@@ -98,7 +125,57 @@ const Profile = () => {
           </motion.div>
         </div>
       )}
+      {/* //////////////////// */}
 
+      {editProfile && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-60 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="bg-gray-900  p-6 rounded-lg shadow-lg w-[40%] text-center"
+          >
+            <p className="text-xl font-semibold mb-4">
+              Update your profile details
+            </p>
+            <form action="">
+              <input
+                type="text"
+                placeholder="First Name"
+                onChange={(e) =>
+                  handleChange(e)
+                }
+                value={updatedUser.firstName}
+                className="bg-gray-700 text-white py-2 px-4 rounded mb-4 w-full"
+              />
+              <input
+                type="text"
+                placeholder="First Name"
+                onChange={(e) =>
+                  handleChange(e)
+                }
+                value={updatedUser.lastName}
+                className="bg-gray-700 text-white py-2 px-4 rounded mb-4 w-full"
+              />
+              <div className="flex justify-between">
+                <button
+                  onClick={() => setEditProfile(false)}
+                  className="bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleProfileUpdate}
+                  className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
+                >
+                  Update Details
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
       {/* Loader Component for full-screen loader after logout */}
       {isLoggingOut && <LoaderComponent message="Logging out" />}
 
@@ -111,12 +188,17 @@ const Profile = () => {
           />
 
           <div>
-            <h3 className="text-lg font-semibold text-gray-100">{user.firstName} {user.lastName}</h3>
+            <h3 className="text-lg font-semibold text-gray-100">
+              {user.firstName} {user.lastName}
+            </h3>
             <p className="text-gray-400">{user.email}</p>
           </div>
         </div>
 
-        <button className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto">
+        <button
+          onClick={handleEditProfileConfirmation}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded transition duration-200 w-full sm:w-auto"
+        >
           Edit Profile
         </button>
 
@@ -128,7 +210,7 @@ const Profile = () => {
         </button>
 
         <ToastContainer
-        style={{ zIndex: 50 }}  
+          style={{ zIndex: 50 }}
           position="top-right"
           autoClose={3000}
           hideProgressBar={false}

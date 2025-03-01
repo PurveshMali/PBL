@@ -12,7 +12,13 @@ router.post("/register", async (req, res) => {
     const { firstName, lastName, email, mobile, password } = req.body;
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const user = new User({ firstName, lastName, email, mobile, password: hashedPassword });
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      mobile,
+      password: hashedPassword,
+    });
     await user.save();
 
     res.status(201).json({ message: "User registered successfully!" });
@@ -31,8 +37,14 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "24h" });
-    res.cookie("token", token, { httpOnly: true, secure: true, sameSite: "none" });
+    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+    });
     res.json({ token, user });
   } catch (error) {
     res.status(500).json({ message: "Error logging in", error });
@@ -40,24 +52,23 @@ router.post("/login", async (req, res) => {
 });
 
 router.post("/logout", (req, res) => {
-  
   res.clearCookie("token");
   res.json({ message: "Logout successful" });
 });
 
 router.get("/validate", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
-  if (!token) return res.status(401).json({ message: "Unauthorized" }); 
+  if (!token) return res.status(401).json({ message: "Unauthorized" });
 
   jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(403).json({ message: "Invalid token" }); 
-    res.json({ message: "Token is valid", user: decoded }); 
+    if (err) return res.status(403).json({ message: "Invalid token" });
+    res.json({ message: "Token is valid", user: decoded });
   });
 });
 
 router.get("/profile", async (req, res) => {
   try {
-    const token = req.headers.authorization?.split(" ")[1]; // Extract token  
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token
     if (!token) return res.status(401).json({ message: "Unauthorized" });
 
     jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
@@ -65,11 +76,38 @@ router.get("/profile", async (req, res) => {
       const user = await User.findById(decoded.userId);
       if (!user) return res.status(404).json({ message: "User not found" });
       res.json(user);
-    } );
+    });
   } catch (error) {
     res.status(500).json({ message: "Error fetching user profile", error });
   }
 });
+
+router.put("/profile/edit", async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(" ")[1]; // Extract token
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+      if (err) return res.status(403).json({ message: "Invalid token" });
+
+      const { firstName, lastName, mobile } = req.body; // Editable fields
+
+      const updatedUser = await User.findByIdAndUpdate(
+        decoded.userId,
+        { firstName, lastName, mobile },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+
+      res.json({ message: "Profile updated successfully!", user: updatedUser });
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error updating profile", error });
+  }  
+});
+
+
 
 // Forgot Password (Email Link)
 router.post("/forgot-password", async (req, res) => {
@@ -80,7 +118,10 @@ router.post("/forgot-password", async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Send Reset Email (Dummy Example)
-    const transporter = nodemailer.createTransport({ service: "Gmail", auth: { user: "your-email@gmail.com", pass: "your-password" } });
+    const transporter = nodemailer.createTransport({
+      service: "Gmail",
+      auth: { user: "your-email@gmail.com", pass: "your-password" },
+    });
     await transporter.sendMail({
       from: "your-email@gmail.com",
       to: email,
