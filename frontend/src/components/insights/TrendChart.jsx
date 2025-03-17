@@ -31,9 +31,10 @@ const TrendChart = () => {
 								borderColor: "#4B5563",
 							}}
 							itemStyle={{ color: "#E5E7EB" }}
+							cursor={{ fill: "rgba(31, 41, 55, 0.8)" }}
 						/>
 						<Legend />
-						<Line type='monotone' dataKey='emission' stroke='#8B5CF6' strokeWidth={2} />
+						<Line type='monotone' dataKey='Emission' stroke = '#8B5CF6' strokeWidth={2} />
 					</LineChart>
 				</ResponsiveContainer>
 			</div>

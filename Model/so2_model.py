@@ -8,8 +8,11 @@ from sklearn.compose import ColumnTransformer
 from sklearn.metrics import mean_absolute_error
 from xgboost import XGBRegressor
 from prophet import Prophet
+import matplotlib.pyplot as plt
+from flask_cors import CORS 
 
 app = Flask(__name__)
+CORS(app)
 
 MODEL_PATH = "./so2_trained_model.pkl"
 DATA_PATH = "./so2_data.csv"
@@ -26,7 +29,7 @@ def generate_data():
     dates = pd.date_range(start='2000-01-01', end='2023-12-31', freq='M')
 
     # Fuel types based on Indian power plants
-    fuel_types = ['Domestic Coal', 'Imported Coal', 'Lignite', 'Natural Gas']
+    fuel_types = ['Coal', 'Oil', 'Lignite', 'Natural Gas']
     regions = ['North', 'South', 'East', 'West']
 
     n_samples = 1000
@@ -85,7 +88,7 @@ def preprocess_data():
 class HybridModel:
     def __init__(self):
         self.prophet_models = {}  # Store separate Prophet models for each fuel type
-        self.xgb = XGBRegressor(n_estimators=300, learning_rate=0.01)
+        self.xgb = XGBRegressor(n_estimators=500, learning_rate=0.05, max_depth=6, subsample=0.8)
         self.preprocessor = None
 
     def fit(self, df):
@@ -143,6 +146,19 @@ def train_model():
 
     joblib.dump(model, MODEL_PATH)
     print(f"Trained model saved as '{MODEL_PATH}'.")
+    
+    
+
+    feature_names = model.preprocessor.get_feature_names_out()
+    importances = model.xgb.feature_importances_
+
+    plt.figure(figsize=(10, 5))
+    plt.barh(feature_names, importances)
+    plt.xlabel("Feature Importance")
+    plt.ylabel("Feature Name")
+    plt.title("XGBoost Feature Importance")
+    plt.show()
+
 
 # -------------------------------
 # 4. API Routes for Prediction
@@ -177,4 +193,4 @@ def train():
     return jsonify({"message": "Model trained successfully."})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, port=8080)

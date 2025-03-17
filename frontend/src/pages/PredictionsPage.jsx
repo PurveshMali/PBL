@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { Loader } from "lucide-react";
+import PredictionsResult from "../components/predictions/PredictionsResult";
+import axios from "axios";
 
 const FuelCostForm = () => {
   const [formData, setFormData] = useState({
@@ -13,11 +15,12 @@ const FuelCostForm = () => {
 
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [result, setResult] = useState(null);
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 20 }, (_, i) => currentYear + i);
   const months = Array.from({ length: 12 }, (_, i) => i + 1);
-  const fuelTypes = ["oil", "natural gas", "biomass", "coal", "gas", "renewable"];
+  const fuelTypes = ["Coal", "Oil", "Lignite", "Natural Gas"];
   const regions = ["East", "West", "North", "South"];
 
   const handleChange = (e) => {
@@ -28,28 +31,42 @@ const FuelCostForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
+    // Validate inputs
     const newErrors = {};
     Object.keys(formData).forEach((key) => {
       if (!formData[key]) {
         newErrors[key] = "This field is required";
       }
     });
-    
+
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
 
     setIsLoading(true);
+    setResult(null); // Reset previous result
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      console.log("Form submitted:", formData);
-      alert("Form submitted successfully!");
+      const response = await axios.post(
+        "http://127.0.0.1:8080/predict",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        setResult(response.data.predicted_so2_emissions);
+      } else {
+        throw new Error("Unexpected API response");
+      }
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("Error submitting form. Please try again.");
+      console.log("Error fetching prediction:", error);
+      alert("Failed to fetch prediction. Please try again.");
     } finally {
       setIsLoading(false);
     }
@@ -58,15 +75,18 @@ const FuelCostForm = () => {
   return (
     <motion.div className="min-h-screen bg-transparent text-gray-100 flex flex-col z-10 w-full relative items-center justify-center px-4 sm:px-6 lg:px-8">
       <motion.div
-        className="bg-gray-800 w-[40%] bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+        className="bg-gray-800 w-[40%] bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 flex items-center justify-center flex-col"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
-        <h2 className="text-xl sm:text-4xl font-semibold text-gray-100 mt-2 mb-5 font-mono">
+        <h2 className="text-xl sm:text-4xl font-semibold text-gray-100 mt-2 mb-5 font-serif">
           Get Predictions
         </h2>
-        <form className="flex flex-col gap-4 w-full h-full" onSubmit={handleSubmit}>
+        <form
+          className="flex flex-col gap-4 w-full h-full"
+          onSubmit={handleSubmit}
+        >
           <div className="flex flex-col sm:flex-row w-full gap-4">
             <div className="w-full sm:w-1/2">
               <select
@@ -75,14 +95,18 @@ const FuelCostForm = () => {
                 onChange={handleChange}
                 value={formData.fuel_type}
               >
-                <option value="" disabled>Select Fuel Type</option>
+                <option value="" disabled>
+                  Select Fuel Type
+                </option>
                 {fuelTypes.map((type) => (
                   <option key={type} value={type} className="bg-gray-800">
                     {type.charAt(0).toUpperCase() + type.slice(1)}
                   </option>
                 ))}
               </select>
-              {errors.fuel_type && <p className="text-red-500 text-sm">{errors.fuel_type}</p>}
+              {errors.fuel_type && (
+                <p className="text-red-500 text-sm">{errors.fuel_type}</p>
+              )}
             </div>
             <div className="w-full sm:w-1/2">
               <input
@@ -93,7 +117,9 @@ const FuelCostForm = () => {
                 onChange={handleChange}
                 value={formData.fuel_cost}
               />
-              {errors.fuel_cost && <p className="text-red-500 text-sm">{errors.fuel_cost}</p>}
+              {errors.fuel_cost && (
+                <p className="text-red-500 text-sm">{errors.fuel_cost}</p>
+              )}
             </div>
           </div>
           <div className="flex flex-col sm:flex-row w-full gap-4">
@@ -104,12 +130,18 @@ const FuelCostForm = () => {
                 onChange={handleChange}
                 value={formData.year}
               >
-                <option value="" disabled>Select Year</option>
+                <option value="" disabled>
+                  Select Year
+                </option>
                 {years.map((year) => (
-                  <option key={year} value={year} className="bg-gray-800">{year}</option>
+                  <option key={year} value={year} className="bg-gray-800">
+                    {year}
+                  </option>
                 ))}
               </select>
-              {errors.year && <p className="text-red-500 text-sm">{errors.year}</p>}
+              {errors.year && (
+                <p className="text-red-500 text-sm">{errors.year}</p>
+              )}
             </div>
             <div className="w-full sm:w-1/2">
               <select
@@ -118,12 +150,18 @@ const FuelCostForm = () => {
                 onChange={handleChange}
                 value={formData.month}
               >
-                <option value="" disabled>Select Month</option>
+                <option value="" disabled>
+                  Select Month
+                </option>
                 {months.map((month) => (
-                  <option key={month} value={month} className="bg-gray-800">{month}</option>
+                  <option key={month} value={month} className="bg-gray-800">
+                    {month}
+                  </option>
                 ))}
               </select>
-              {errors.month && <p className="text-red-500 text-sm">{errors.month}</p>}
+              {errors.month && (
+                <p className="text-red-500 text-sm">{errors.month}</p>
+              )}
             </div>
           </div>
           <div className="w-full">
@@ -133,21 +171,35 @@ const FuelCostForm = () => {
               onChange={handleChange}
               value={formData.region}
             >
-              <option value="" disabled>Select Region</option>
+              <option value="" disabled>
+                Select Region
+              </option>
               {regions.map((region) => (
-                <option key={region} value={region} className="bg-gray-800">{region}</option>
+                <option key={region} value={region} className="bg-gray-800">
+                  {region}
+                </option>
               ))}
             </select>
-            {errors.region && <p className="text-red-500 text-sm">{errors.region}</p>}
+            {errors.region && (
+              <p className="text-red-500 text-sm">{errors.region}</p>
+            )}
           </div>
           <button
             className="bg-blue-600 hover:bg-blue-700 w-full text-white font-bold py-2 sm:py-3 px-4 rounded-xl transition duration-200 items-center justify-center flex mt-4"
             disabled={isLoading}
           >
-            {isLoading ? <Loader className="animate-spin" size={24} color="white" /> : "Submit"}
+            {isLoading ? (
+              <Loader className="animate-spin" size={24} color="white" />
+            ) : (
+              "Submit"
+            )}
           </button>
         </form>
       </motion.div>
+
+      <div className="mt-8">
+        {result !== null && <PredictionsResult result={result} /> || <div className=" text-gray-500 text-base font-medium">Prediction will be shown here <span  className="text-grey-200 font-thin">(Please submit the above form with appropriate values)</span></div>}
+      </div>
     </motion.div>
   );
 };
