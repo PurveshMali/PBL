@@ -18,7 +18,7 @@ const TrendChart = () => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
-			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Emmision Trend</h2>
+			<h2 className='text-xl font-semibold text-gray-100 mb-4'>Emmision Trend (CO<sub>2</sub>)</h2>
 			<div style={{ width: "100%", height: 300 }}>
 				<ResponsiveContainer>
 					<LineChart data={emissionData}>
@@ -31,10 +31,9 @@ const TrendChart = () => {
 								borderColor: "#4B5563",
 							}}
 							itemStyle={{ color: "#E5E7EB" }}
-							cursor={{ fill: "rgba(31, 41, 55, 0.8)" }}
 						/>
 						<Legend />
-						<Line type='monotone' dataKey='Emission' stroke = '#8B5CF6' strokeWidth={2} />
+						<Line type='monotone' dataKey='emission' stroke = '#8B5CF6' strokeWidth={2} />
 					</LineChart>
 				</ResponsiveContainer>
 			</div>

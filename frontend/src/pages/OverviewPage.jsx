@@ -6,8 +6,8 @@ import StatCard from "../components/common/StatCard";
 import { motion } from "framer-motion";
 import EmissionOverviewChart from "../components/overview/EmissionOverviewChart";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesChannelChart from "../components/overview/StateEmission";
 import axios from "axios";
+import StateEmission from "../components/overview/StateEmission";
 
 const OverviewPage = () => {
   const navigate = useNavigate();
@@ -15,7 +15,7 @@ const OverviewPage = () => {
   const [totalValue, setTotalValue] = useState(0); // ✅ Default 0 instead of null
   const [totalPlants, setTotalPlants] = useState(0);
 
-  // ✅ Check authentication when the page loads
+  //Check authentication when the page loads
   useEffect(() => {
     const checkAuth = async () => {
       try {
@@ -86,7 +86,7 @@ const OverviewPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <EmissionOverviewChart />
           <CategoryDistributionChart />
-          <SalesChannelChart />
+          <StateEmission />
         </div>
       </main>
     </div>

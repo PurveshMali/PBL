@@ -1,10 +1,58 @@
 from flask import Flask, jsonify , request
 import pandas as pd
 from flask_cors import CORS
+import openai
+import google.generativeai as genai
+import re
+import os   
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 CORS(app)
 
+load_dotenv()
+
+# Set API key
+genai.configure(api_key=os.getenv("API_KEY"))
+
+# Load the Gemini model
+model = genai.GenerativeModel("gemini-1.5-flash")
+
+def generate_insights():
+    """
+    Fetch AI-generated insights about India's power sector and extract key points.
+    """
+    prompt = """
+    Provide the top 4 AI-driven insights on India's power sector:
+    1. Most polluting sector and its emission statistics.
+    2. Best performing energy source based on sustainability.
+    3. Recent government policies affecting India's power plants.
+    4. Future trends in India's electricity generation.
+    Format your response clearly with headings for each insight and limit it for 200 words each.
+    """
+
+    try:
+        response = model.generate_content(prompt)
+        raw_text = response.text.strip()
+
+        # Improved Regex to handle multiline content properly
+        insights = re.findall(r"\*\*(.*?)\*\*[:\s]*\n(.*?)(?=\n\*\*|\Z)", raw_text, re.DOTALL)
+
+        # Format into JSON
+        insights_data = [{"title": title.strip(), "content": content.strip()} for title, content in insights]
+        return insights_data
+
+    except Exception as e:
+        return {"error": str(e)}    
+
+
+@app.route('/get-insights', methods=['GET'])
+def get_insights():
+    """
+    API route to get power sector insights.
+    """
+    insights = generate_insights()
+    return jsonify({"insights": insights})
 
 @app.route('/api/totalemmision', methods=['GET'])
 def total_emmision():
@@ -133,6 +181,7 @@ def get_state_data():
     # Convert to JSON and return the result
     result = grouped_data.to_dict(orient='records')
     return jsonify(result)
+
 
 
 if __name__ == '__main__':
