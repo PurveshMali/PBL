@@ -146,7 +146,6 @@ const ReportsPage = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
-          <h1 className="text-3xl sm:text-4xl font-semibold text-gray-100 font-serif">Analytical Reports</h1>
           <p className="text-gray-400 mt-2">
             View and download comprehensive reports on emissions, costs, and forecasts
           </p>
