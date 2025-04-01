@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Loader } from "lucide-react";
+import { Loader, CloudAlert } from "lucide-react";
 import PredictionsResult from "../components/predictions/PredictionsResult";
 import axios from "axios";
 import AIPoweredInsights from "../components/predictions/AIPoweredInsights";
@@ -18,6 +18,10 @@ const FuelCostForm = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [result, setResult] = useState(null);
+  const [message, setMessage] = useState("Prediction will be shown here");
+  const [subMessage, setSubMessage] = useState(
+    "(Please submit the above form with appropriate values)"
+  );
 
   const currentYear = new Date().getFullYear();
   const years = Array.from({ length: 20 }, (_, i) => currentYear + i);
@@ -68,7 +72,8 @@ const FuelCostForm = () => {
       }
     } catch (error) {
       console.log("Error fetching prediction:", error);
-      alert("Failed to fetch prediction. Please try again.");
+      setMessage("Error fetching prediction");
+      setSubMessage("(Server error, please try again later!)");
     } finally {
       setIsLoading(false);
     }
@@ -82,7 +87,7 @@ const FuelCostForm = () => {
           className="bg-gray-800 w-[80%] bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 flex items-center justify-center flex-col"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0 }}
+          transition={{ delay: 0.7 }}
         >
           <h2 className="text-xl sm:text-4xl font-semibold text-gray-100 mt-2 mb-5 font-serif">
             Get Predictions
@@ -201,17 +206,18 @@ const FuelCostForm = () => {
           </form>
         </motion.div>
 
-        <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.0 }}
-        className="mt-8">
+        {/* <div className="w-20 bg-grey-500 h-20 mt-8 border-none rounded-full flex justify-center items-center">
+          <CloudAlert color="Red" size={50} />
+        </div> */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+        >
           {(result !== null && <PredictionsResult result={result} />) || (
             <div className=" text-gray-500 text-base font-medium">
-              Prediction will be shown here{" "}
-              <span className="text-grey-200 font-thin">
-                (Please submit the above form with appropriate values)
-              </span>
+              {message}{" "}
+              <span className="text-grey-200 font-thin">{subMessage}</span>
             </div>
           )}
         </motion.div>

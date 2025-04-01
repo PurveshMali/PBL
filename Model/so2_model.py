@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-import joblib
+import joblib   
 import os
 from flask import Flask, request, jsonify
 from sklearn.preprocessing import StandardScaler, OneHotEncoder
@@ -149,15 +149,15 @@ def train_model():
     
     
 
-    feature_names = model.preprocessor.get_feature_names_out()
-    importances = model.xgb.feature_importances_
+    # feature_names = model.preprocessor.get_feature_names_out()
+    # importances = model.xgb.feature_importances_
 
-    plt.figure(figsize=(10, 5))
-    plt.barh(feature_names, importances)
-    plt.xlabel("Feature Importance")
-    plt.ylabel("Feature Name")
-    plt.title("XGBoost Feature Importance")
-    plt.show()
+    # plt.figure(figsize=(10, 5))
+    # plt.barh(feature_names, importances)
+    # plt.xlabel("Feature Importance")
+    # plt.ylabel("Feature Name")
+    # plt.title("XGBoost Feature Importance")
+    # plt.show()
 
 
 # -------------------------------

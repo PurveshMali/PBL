@@ -177,7 +177,6 @@ def get_state_data():
     
     # Group and summarize data for pie chart
     grouped_data = data.groupby('Name of Project')['SO2 Norms (mg/Nm3)'].sum().reset_index()
-    #print(grouped_data)
     # Convert to JSON and return the result
     result = grouped_data.to_dict(orient='records')
     return jsonify(result)

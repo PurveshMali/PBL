@@ -18,7 +18,7 @@ const SIDEBAR_ITEMS = [
   { name: "Impact", icon: Axis3d, color: "#ec4899", href: "/impacts" },
   { name: "Predictions", icon: Target, color: "#10b981", href: "/predictions" },
   { name: "Reports", icon: BookText, color: "#f59e0b", href: "/reports" },
-  { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },
+  // { name: "Analytics", icon: TrendingUp, color: "#3B82F6", href: "/analytics" },
   { name: "Settings", icon: Settings, color: "#6EE7B7", href: "/settings" },
 ];
 
