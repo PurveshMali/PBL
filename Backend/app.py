@@ -1,4 +1,4 @@
-from flask import Flask, jsonify , request
+from flask import Flask, jsonify , request, send_from_directory
 import pandas as pd
 from flask_cors import CORS
 import openai
@@ -181,7 +181,28 @@ def get_state_data():
     result = grouped_data.to_dict(orient='records')
     return jsonify(result)
 
+REPORTS_DIR = os.path.join(os.getcwd(), "../data", "")
+@app.route("/reports/<int:report_id>/download")
+def download_report(report_id):
+    format = request.args.get("format", "pdf")  # Default format is PDF
+    filename = f"Co2_Emissions_by_Sectors.csv"
+    file_path = os.path.join(REPORTS_DIR, filename)
+    print(file_path)
+    print(filename)
+
+    # Check if file exists
+    if not os.path.exists(file_path):
+        return jsonify({"error": "File not found"}), 404
+
+    # Serve the file for download
+    return send_from_directory(REPORTS_DIR, filename, as_attachment=True)
 
 
+@app.route("/abc")
+def abc():
+    print("------------------------------------")
+    
+    return jsonify({"message": "Hello, World!"})
+    
 if __name__ == '__main__':
     app.run(debug=True)

@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 const nodemailer = require("nodemailer");
+const path = require("path");
+const fs = require("fs");
 
 const router = express.Router();
 
@@ -98,16 +100,15 @@ router.put("/profile/edit", async (req, res) => {
         { new: true, runValidators: true }
       );
 
-      if (!updatedUser) return res.status(404).json({ message: "User not found" });
+      if (!updatedUser)
+        return res.status(404).json({ message: "User not found" });
 
       res.json({ message: "Profile updated successfully!", user: updatedUser });
     });
   } catch (error) {
     res.status(500).json({ message: "Error updating profile", error });
-  }  
+  }
 });
-
-
 
 // Forgot Password (Email Link)
 router.post("/forgot-password", async (req, res) => {
@@ -133,6 +134,28 @@ router.post("/forgot-password", async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Error sending email", error });
   }
+});
+
+const REPORTS_DIR = path.join(__dirname, "data", "");
+
+router.get("/reports/:reportId/download", (req, res) => {
+  const reportId = req.params.reportId;
+  const format = req.query.format || "pdf"; // Default format is PDF
+  const filename = `Co2_Emissions_by_Sectors.csv`;
+  const filePath = path.join(REPORTS_DIR, filename);
+
+  // Check if the file exists
+  if (!fs.existsSync(filePath)) {
+    return res.status(404).json({ error: "File not found" });
+  }
+
+  // Serve the file as an attachment
+  res.download(filePath, filename, (err) => {
+    if (err) {
+      console.error("Error sending file:", err);
+      res.status(500).json({ error: "Failed to download file" });
+    }
+  });
 });
 
 module.exports = router;

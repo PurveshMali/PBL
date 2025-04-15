@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Download, FileText, FileSpreadsheet, Filter, Eye, Loader } from "lucide-react";
+import {
+  Download,
+  FileText,
+  FileSpreadsheet,
+  Filter,
+  Eye,
+  Loader,
+} from "lucide-react";
 import axios from "axios";
 import Header from "../components/common/Header";
 
@@ -16,51 +23,57 @@ const ReportsPage = () => {
     {
       id: 1,
       title: "Annual Emissions Report",
-      description: "Comprehensive analysis of annual SO2 emissions across all regions and fuel types.",
+      description:
+        "Comprehensive analysis of annual SO2 emissions across all regions and fuel types.",
       type: "emissions",
       date: "2025-03-15",
-      formats: ["pdf", "csv"]
+      formats: ["pdf", "csv"],
     },
     {
       id: 2,
       title: "Regional Fuel Cost Analysis",
-      description: "Breakdown of fuel costs by region with projected cost trends for the next fiscal year.",
+      description:
+        "Breakdown of fuel costs by region with projected cost trends for the next fiscal year.",
       type: "cost",
       date: "2025-03-01",
-      formats: ["pdf"]
+      formats: ["pdf"],
     },
     {
       id: 3,
       title: "Comparative Emissions by Fuel Type",
-      description: "Cross-comparison of emissions data between different fuel types over the last 5 years.",
+      description:
+        "Cross-comparison of emissions data between different fuel types over the last 5 years.",
       type: "emissions",
       date: "2025-02-20",
-      formats: ["pdf", "csv"]
+      formats: ["pdf", "csv"],
     },
     {
       id: 4,
       title: "Monthly Cost Fluctuation",
-      description: "Detailed analysis of monthly fuel cost fluctuations with seasonal pattern identification.",
+      description:
+        "Detailed analysis of monthly fuel cost fluctuations with seasonal pattern identification.",
       type: "cost",
       date: "2025-02-10",
-      formats: ["csv"]
+      formats: ["csv"],
     },
     {
       id: 5,
       title: "Predictive Emissions Model Results",
-      description: "Results from the advanced predictive emissions model with forecasts for the next 3 years.",
+      description:
+        "Results from the advanced predictive emissions model with forecasts for the next 3 years.",
       type: "forecast",
       date: "2025-01-25",
-      formats: ["pdf", "csv"]
+      formats: ["pdf", "csv"],
     },
     {
       id: 6,
       title: "Regulatory Compliance Report",
-      description: "Analysis of current emissions levels against regulatory standards across all regions.",
+      description:
+        "Analysis of current emissions levels against regulatory standards across all regions.",
       type: "compliance",
       date: "2025-01-15",
-      formats: ["pdf"]
-    }
+      formats: ["pdf"],
+    },
   ];
 
   useEffect(() => {
@@ -71,7 +84,7 @@ const ReportsPage = () => {
         // In a real application, you would fetch from your API
         // const response = await axios.get("http://127.0.0.1:8080/reports");
         // setReports(response.data);
-        
+
         // Using mock data for demonstration
         setTimeout(() => {
           setReports(mockReports);
@@ -89,48 +102,54 @@ const ReportsPage = () => {
   const handleDownload = async (reportId, format) => {
     setDownloadLoading(`${reportId}-${format}`);
     try {
-      // In a real application, you would make an API call to download the file
-      // const response = await axios.get(`http://127.0.0.1:8080/reports/${reportId}/download?format=${format}`, {
-      //   responseType: 'blob'
-      // });
+        const response = await axios.get(
+            `http://127.0.0.1:5000/reports/${reportId}/download?format=${format}`, 
+            {
+                responseType: "blob", // Ensures file is downloaded properly
+            }
+        );
 
-      // Mock download delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
+        // Create a file from the response
+        const fileName = `report-${reportId}.${format}`;
+        const blob = new Blob([response.data]);
+        const url = window.URL.createObjectURL(blob);
 
-      // Mock download functionality
-      const fileName = `report-${reportId}.${format}`;
-      
-      // In a real implementation, you would create a blob from the response and download it
-      // const blob = new Blob([response.data]);
-      // const url = window.URL.createObjectURL(blob);
-      // const a = document.createElement('a');
-      // a.href = url;
-      // a.download = fileName;
-      // document.body.appendChild(a);
-      // a.click();
-      // window.URL.revokeObjectURL(url);
+        // Create a link element, trigger download, and clean up
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
 
-      console.log(`Downloading ${fileName}`);
-      
-      // Show success message
-      alert(`Downloaded ${fileName} successfully!`);
+        alert(`Downloaded ${fileName} successfully!`);
     } catch (error) {
-      console.error(`Error downloading report ${reportId} in ${format} format:`, error);
-      alert(`Failed to download report. Please try again later.`);
+        console.error(
+            `Error downloading report ${reportId} in ${format} format:`,
+            error
+        );
+
+        if (error.response && error.response.status === 404) {
+            alert("Report not found. Please check if the file exists.");
+        } else {
+            alert("Failed to download report. Please try again later.");
+        }
     } finally {
-      setDownloadLoading(null);
+        setDownloadLoading(null);
     }
-  };
+};
 
   const handleView = (reportId) => {
     // In a real app, this would open a detailed view or preview
     alert(`Viewing report ${reportId}`);
   };
 
-  const filteredReports = reports.filter(report => {
+  const filteredReports = reports.filter((report) => {
     const matchesFilter = filter === "all" || report.type === filter;
-    const matchesSearch = report.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          report.description.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesSearch =
+      report.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      report.description.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesFilter && matchesSearch;
   });
 
@@ -147,7 +166,8 @@ const ReportsPage = () => {
           transition={{ delay: 0.2 }}
         >
           <p className="text-gray-400 mt-2">
-            View and download comprehensive reports on emissions, costs, and forecasts
+            View and download comprehensive reports on emissions, costs, and
+            forecasts
           </p>
 
           {/* Search and filter controls */}
@@ -193,12 +213,16 @@ const ReportsPage = () => {
                 transition={{ delay: 0.3 + index * 0.1 }}
               >
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-medium text-white">{report.title}</h3>
-                  <span className="px-2 py-1 text-xs rounded-full bg-blue-900 text-blue-300">
+                  <h3 className="text-xl font-medium text-white">
+                    {report.title}
+                  </h3>
+                  <span className="px-2 py-1 text-xs rounded-full bg-blue-600 text-blue-100">
                     {report.type.charAt(0).toUpperCase() + report.type.slice(1)}
                   </span>
                 </div>
-                <p className="text-gray-400 text-sm mb-4 flex-grow">{report.description}</p>
+                <p className="text-gray-400 text-sm mb-4 flex-grow">
+                  {report.description}
+                </p>
                 <div className="text-gray-500 text-xs mb-4">
                   Generated on: {new Date(report.date).toLocaleDateString()}
                 </div>
@@ -212,7 +236,7 @@ const ReportsPage = () => {
                   </button>
                   {report.formats.includes("pdf") && (
                     <button
-                      className="flex items-center justify-center gap-1 bg-red-900 hover:bg-red-800 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      className="flex items-center justify-center gap-1 bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
                       onClick={() => handleDownload(report.id, "pdf")}
                       disabled={downloadLoading === `${report.id}-pdf`}
                     >
@@ -226,7 +250,7 @@ const ReportsPage = () => {
                   )}
                   {report.formats.includes("csv") && (
                     <button
-                      className="flex items-center justify-center gap-1 bg-green-900 hover:bg-green-800 text-white px-3 py-2 rounded-lg text-sm transition-colors"
+                      className="flex items-center justify-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg text-sm transition-colors"
                       onClick={() => handleDownload(report.id, "csv")}
                       disabled={downloadLoading === `${report.id}-csv`}
                     >
@@ -250,7 +274,9 @@ const ReportsPage = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            <p className="text-gray-400">No reports match your search criteria.</p>
+            <p className="text-gray-400">
+              No reports match your search criteria.
+            </p>
           </motion.div>
         )}
       </main>

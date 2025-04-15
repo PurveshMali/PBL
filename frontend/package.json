@@ -14,7 +14,7 @@
     "@react-spring/web": "^9.7.5",
     "@react-three/drei": "^9.121.4",
     "@react-three/fiber": "^8.17.14",
-    "axios": "^1.7.9",
+    "axios": "^1.8.4",
     "d3": "^7.9.0",
     "framer-motion": "^11.18.0",
     "gsap": "^3.12.7",
