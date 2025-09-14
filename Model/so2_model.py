@@ -28,8 +28,8 @@ def generate_data():
     # Date range (monthly from 2000 to 2023)
     dates = pd.date_range(start='2000-01-01', end='2023-12-31', freq='M')
 
-    # Fuel types based on Indian power plants
-    fuel_types = ['Coal', 'Oil', 'Lignite', 'Natural Gas']
+    # ✅ Fuel types corrected
+    fuel_types = ['Domestic Coal', 'Imported Coal', 'Lignite', 'Natural Gas']
     regions = ['North', 'South', 'East', 'West']
 
     n_samples = 1000
@@ -67,7 +67,7 @@ def generate_data():
     })
 
     df.to_csv(DATA_PATH, index=False)
-    print(f"Data generated and saved as '{DATA_PATH}'.")
+    print(f"✅ Data generated and saved as '{DATA_PATH}'.")
 
 def preprocess_data():
     df = pd.read_csv(DATA_PATH)

@@ -56,7 +56,7 @@ def get_insights():
 
 @app.route('/api/totalemmision', methods=['GET'])
 def total_emmision():
-    data = pd.read_csv(f'../data/Indian-Air-Pollutiionupdated.csv')
+    data = pd.read_csv(f'D:/Projects/PBL/data/Indian-Air-Pollutiionupdated.csv')
     data['Average SO2 (mg/Nm3) - 2024-25'] =pd.to_numeric(data['Average SO2 (mg/Nm3) - 2024-25'], errors='coerce')
 
     sumdata = data['Average SO2 (mg/Nm3) - 2024-25'].sum()
@@ -67,7 +67,7 @@ def total_emmision():
 
 @app.route('/api/call-emmision', methods=['GET'])
 def call_emmision():
-    data = pd.read_csv(f'../data/Indian-Air-Pollutiionupdated.csv')
+    data = pd.read_csv(f'D:/Projects/PBL/data/Indian-Air-Pollutiionupdated.csv')
 
     data['Average SO2 (mg/Nm3) - 2024-25'] = pd.to_numeric(data['Average SO2 (mg/Nm3) - 2024-25'], errors='coerce')
     grouped_data = data.groupby('State')['Average SO2 (mg/Nm3) - 2024-25'].sum().reset_index()
@@ -81,7 +81,7 @@ def call_emmision():
 
 @app.route('/api/call-emmisionofstates', methods=['GET'])
 def call_emmisionall():
-    data = pd.read_csv(f'../data/Indian-Air-Pollutiionupdated.csv')
+    data = pd.read_csv(f'D:/Projects/PBL/data/Indian-Air-Pollutiionupdated.csv')
 
     data['Average SO2 (mg/Nm3) - 2024-25'] = pd.to_numeric(data['Average SO2 (mg/Nm3) - 2024-25'], errors='coerce')
     grouped_data = data.groupby('State')['Average SO2 (mg/Nm3) - 2024-25'].sum().reset_index()
@@ -94,7 +94,7 @@ def call_emmisionall():
 
 @app.route('/api/totalplants', methods=['GET'])
 def total_plants():
-    data = pd.read_csv(f'../data/Indian-Air-Pollutiion.csv')
+    data = pd.read_csv(f'D:/Projects/PBL/data/Indian-Air-Pollutiion.csv')
     total_entries = data.iloc[-1, 0]
     return jsonify(int(total_entries))
 
@@ -102,7 +102,7 @@ def total_plants():
 @app.route('/api/totalpiechart')
 def piedata():
     # Correct file path and method
-    file_path = f'../data/indiaCo2emmisionbysectors(2022).csv'
+    file_path = f'D:/Projects/PBL/data/indiaCo2emmisionbysectors(2022).csv'
     
     # Read the Excel file
     df = pd.read_csv(file_path)
@@ -133,7 +133,7 @@ def piedata():
 @app.route('/api/total-capacity-by-state', methods=['GET'])
 def total_capacity_by_state():
     # Load your CSV file
-    data = pd.read_csv(f'../data/Indian-Air-Pollutiion.csv')
+    data = pd.read_csv(f'D:/Projects/PBL/data/Indian-Air-Pollutiion.csv')
     #print("request get initialized!!")
     # Group data by State and calculate the total capacity
     grouped_data = data.groupby('State')['Total Capacity'].sum().reset_index()
@@ -160,7 +160,7 @@ def get_chart_data():
 @app.route('/api/state-data', methods=['GET'])
 def get_state_data():
     state_name = request.args.get('state', 'Maharashtra')  # Default to Maharashtra
-    file_path = f'../data/Indian-Air-Pollutiion.csv'  # Replace with your file path
+    file_path = f'D:/Projects/PBL/data/Indian-Air-Pollutiion.csv'  # Replace with your file path
     
     # Load data
     data = pd.read_csv(file_path)
