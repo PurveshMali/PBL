@@ -6,12 +6,12 @@ This project is an emissions intelligence platform for thermal power plants. It 
 
 The project now uses the real plant registry CSV in the repository, rather than a synthetic dataset. The prediction model is trained on plant attributes such as state, category, total capacity, commissioning date, SO2 norms, prior-year SO2 reading, and unit number. The dashboard presents the prediction along with validation metrics so users can judge model quality at a glance.
 
-Current validation metrics from the latest real-data training run:
+Current validation metrics from the latest cleaned India dataset training run:
 
-- MAE: 90.36
-- RMSE: 124.55
-- MAPE: 9.68%
-- R²: 0.8805
+- MAE: 103.72
+- RMSE: 144.79
+- MAPE: 11.67%
+- R²: 0.8271
 
 ## 2. What the Project Does
 
@@ -55,7 +55,7 @@ This split is deliberate: the model work is easier to evolve in Python, while au
 
 ### Data Layer
 
-The real model now trains on `data/Indian-Air-Pollutiionupdated.csv`, which contains plant-level fields like:
+The model now prefers the cleaned India-only dataset at `data/india_plant_so2_clean.csv` and falls back to `data/Indian-Air-Pollutiionupdated.csv` if needed. The source data contains plant-level fields like:
 
 - State
 - Name of Project
@@ -353,7 +353,7 @@ This section explains the exact backend model logic from request entry to respon
 ### 16.1 Runtime and Files
 
 - Main model service file: `Model/so2_model.py`
-- Training data source: `data/Indian-Air-Pollutiionupdated.csv`
+- Training data source: `data/india_plant_so2_clean.csv` with `data/Indian-Air-Pollutiionupdated.csv` as fallback
 - Serialized artifact: `so2_trained_model.pkl`
 - Service port: `8081`
 - Training target: `Average SO2 (mg/Nm3) - 2024-25`

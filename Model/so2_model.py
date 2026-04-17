@@ -29,9 +29,10 @@ sys.modules.setdefault("Model.so2_model", sys.modules[__name__])
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
-DATA_PATH = PROJECT_ROOT / "data" / "Indian-Air-Pollutiionupdated.csv"
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "Indian-Air-Pollutiionupdated.csv"
+CLEAN_DATA_PATH = PROJECT_ROOT / "data" / "india_plant_so2_clean.csv"
 MODEL_PATH = PROJECT_ROOT / "so2_trained_model.pkl"
-MODEL_VERSION = 4
+MODEL_VERSION = 5
 
 TARGET_COLUMN = "Average SO2 (mg/Nm3) - 2024-25"
 PRIOR_TARGET_COLUMN = "Average SO2 (mg/Nm3) - 2023-24"
@@ -84,27 +85,42 @@ def _numeric_series(series: pd.Series) -> pd.Series:
 
 
 def load_real_dataset() -> pd.DataFrame:
-    if not DATA_PATH.exists():
-        raise FileNotFoundError(f"Missing dataset: {DATA_PATH}")
+    if CLEAN_DATA_PATH.exists():
+        data = pd.read_csv(CLEAN_DATA_PATH)
+        data.columns = data.columns.str.strip()
 
-    data = pd.read_csv(DATA_PATH)
-    data.columns = data.columns.str.strip()
+        data["State"] = data["state"].astype(str).str.strip()
+        data["Category"] = data["category"].astype(str).str.strip().str.upper()
+        data["Name of Project"] = data["plant_name"].astype(str).str.strip()
+        data["Date of Commissioning"] = pd.to_datetime(
+            data["commissioning_date"], errors="coerce"
+        )
+        data["Unit No"] = _numeric_series(data["unit_no"])
+        data["Total Capacity"] = _numeric_series(data["total_capacity_mw"])
+        data["SO2 Norms (mg/Nm3)"] = _numeric_series(data["so2_norms_mg_nm3"])
+        data[PRIOR_TARGET_COLUMN] = _numeric_series(data["prior_avg_so2_mg_nm3"])
+        data[TARGET_COLUMN] = _numeric_series(data["target_avg_so2_mg_nm3"])
+    elif RAW_DATA_PATH.exists():
+        data = pd.read_csv(RAW_DATA_PATH)
+        data.columns = data.columns.str.strip()
 
-    data["State"] = data["State"].astype(str).str.strip()
-    data["Category"] = data["Category"].astype(str).str.strip().str.upper()
-    data["Name of Project"] = data["Name of Project"].astype(str).str.strip()
-    data["Date of Commissioning"] = pd.to_datetime(
-        data["Date of Commissioning"], dayfirst=True, errors="coerce"
-    )
+        data["State"] = data["State"].astype(str).str.strip()
+        data["Category"] = data["Category"].astype(str).str.strip().str.upper()
+        data["Name of Project"] = data["Name of Project"].astype(str).str.strip()
+        data["Date of Commissioning"] = pd.to_datetime(
+            data["Date of Commissioning"], dayfirst=True, errors="coerce"
+        )
 
-    for column in [
-        "Unit No",
-        "Total Capacity",
-        "SO2 Norms (mg/Nm3)",
-        PRIOR_TARGET_COLUMN,
-        TARGET_COLUMN,
-    ]:
-        data[column] = _numeric_series(data[column])
+        for column in [
+            "Unit No",
+            "Total Capacity",
+            "SO2 Norms (mg/Nm3)",
+            PRIOR_TARGET_COLUMN,
+            TARGET_COLUMN,
+        ]:
+            data[column] = _numeric_series(data[column])
+    else:
+        raise FileNotFoundError(f"Missing dataset: {CLEAN_DATA_PATH} or {RAW_DATA_PATH}")
 
     data = data.dropna(
         subset=["State", "Category", "Date of Commissioning", "Total Capacity", "SO2 Norms (mg/Nm3)", TARGET_COLUMN]

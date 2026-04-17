@@ -29,6 +29,58 @@ const STATES = [
 
 const CATEGORIES = ["A", "B", "C"];
 
+const FIELD_GUIDE = {
+  state: "Choose the Indian state where the plant is located.",
+  category: "Use the plant's category from the registry record: A, B, or C.",
+  total_capacity: "Enter installed generation capacity in MW, not annual output.",
+  commissioning_date: "Use the date when this unit first started operating.",
+  so2_norms: "Enter the SO2 emission limit assigned to this plant in mg/Nm3.",
+  prior_avg_so2: "Use the previous year's average SO2 reading from 2023-24.",
+  unit_no: "Enter the unit number for the plant block, usually 1, 2, or 3.",
+};
+
+const formatFeatureName = (name) =>
+  String(name || "")
+    .replace(/^(num__|cat__)/, "")
+    .replace(/_/g, " ")
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+
+const buildPredictionInterpretation = (payload, predictedSo2, featureImportances = []) => {
+  const norm = Number(payload.so2_norms);
+  const prior = Number(payload.prior_avg_so2);
+  const deltaToNorm = predictedSo2 - norm;
+  const deltaToPrior = predictedSo2 - prior;
+  const status = deltaToNorm > 0.01 ? "above" : deltaToNorm < -0.01 ? "below" : "aligned";
+  const compliance = status === "above" ? "Above the norm" : "Within the norm";
+  const summary =
+    status === "above"
+      ? `The plant is projected at ${predictedSo2.toFixed(2)} mg/Nm3, which is ${Math.abs(deltaToNorm).toFixed(2)} mg/Nm3 above the SO2 norm of ${norm.toFixed(2)} mg/Nm3.`
+      : status === "below"
+        ? `The plant is projected at ${predictedSo2.toFixed(2)} mg/Nm3, which is ${Math.abs(deltaToNorm).toFixed(2)} mg/Nm3 below the SO2 norm of ${norm.toFixed(2)} mg/Nm3.`
+        : `The plant is projected at ${predictedSo2.toFixed(2)} mg/Nm3, which is essentially aligned with the SO2 norm of ${norm.toFixed(2)} mg/Nm3.`;
+  const detail =
+    deltaToPrior > 0.01
+      ? `Compared with the 2023-24 average of ${prior.toFixed(2)} mg/Nm3, the forecast is higher by ${Math.abs(deltaToPrior).toFixed(2)} mg/Nm3.`
+      : deltaToPrior < -0.01
+        ? `Compared with the 2023-24 average of ${prior.toFixed(2)} mg/Nm3, the forecast is lower by ${Math.abs(deltaToPrior).toFixed(2)} mg/Nm3.`
+        : `Compared with the 2023-24 average of ${prior.toFixed(2)} mg/Nm3, the forecast is essentially unchanged.`;
+
+  return {
+    status,
+    summary,
+    detail,
+    comparison: {
+      norm: `${deltaToNorm > 0.01 ? "+" : ""}${deltaToNorm.toFixed(2)} mg/Nm3`,
+      prior: `${deltaToPrior > 0.01 ? "+" : ""}${deltaToPrior.toFixed(2)} mg/Nm3`,
+      compliance,
+    },
+    topDrivers: featureImportances.slice(0, 3).map((driver) => ({
+      feature: formatFeatureName(driver.feature),
+      importance: Number(driver.importance).toFixed(1),
+    })),
+  };
+};
+
 const PredictionsPage = () => {
   const [formData, setFormData] = useState({
     state: "",
@@ -43,6 +95,7 @@ const PredictionsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [modelMetrics, setModelMetrics] = useState(null);
+  const [predictionInterpretation, setPredictionInterpretation] = useState(null);
   const [apiError, setApiError] = useState("");
 
   const handleChange = (event) => {
@@ -69,6 +122,7 @@ const PredictionsPage = () => {
     setIsLoading(true);
     setResult(null);
     setModelMetrics(null);
+    setPredictionInterpretation(null);
     setApiError("");
 
     const payload = {
@@ -92,8 +146,14 @@ const PredictionsPage = () => {
         throw new Error(response.data.error);
       }
 
-      setResult(response.data.predicted_so2_emissions ?? null);
+      const predictedSo2 = Number(response.data.predicted_so2_emissions ?? null);
+      const featureImportances = response.data.feature_importances || [];
+
+      setResult(Number.isFinite(predictedSo2) ? predictedSo2 : null);
       setModelMetrics(response.data.model_metrics || null);
+      if (Number.isFinite(predictedSo2)) {
+        setPredictionInterpretation(buildPredictionInterpretation(payload, predictedSo2, featureImportances));
+      }
     } catch (error) {
       console.error("Error fetching prediction:", error);
       const message =
@@ -167,7 +227,12 @@ const PredictionsPage = () => {
               transition={{ delay: 0.3 }}
             >
               {result !== null ? (
-                <PredictionsResult result={result} metrics={modelMetrics} />
+                <PredictionsResult
+                  result={result}
+                  metrics={modelMetrics}
+                  interpretation={predictionInterpretation}
+                  topDrivers={predictionInterpretation?.topDrivers || []}
+                />
               ) : (
                 <div className="rounded-[2rem] border border-dashed border-white/15 bg-slate-950/55 p-6 text-sm text-slate-400 shadow-[0_20px_60px_rgba(2,6,23,0.3)] backdrop-blur-xl">
                   The prediction panel will appear here after you run the form.
@@ -198,6 +263,11 @@ const PredictionsPage = () => {
               </div>
             </div>
 
+            <div className="mt-5 rounded-2xl border border-cyan-400/15 bg-cyan-500/10 p-4 text-sm leading-6 text-cyan-50">
+              Fill the form using the plant's registry record. The previous-year SO2 value is the
+              2023-24 average, while the SO2 norm is the allowed limit for that plant.
+            </div>
+
             <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
               {apiError && (
                 <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
@@ -217,7 +287,7 @@ const PredictionsPage = () => {
                     value={formData.state}
                   >
                     <option value="" disabled>
-                      Select state
+                      Select the plant state
                     </option>
                     {STATES.map((state) => (
                       <option key={state} value={state} className="bg-slate-900">
@@ -225,6 +295,7 @@ const PredictionsPage = () => {
                       </option>
                     ))}
                   </select>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.state}</p>
                   {errors.state && <p className="mt-1 text-sm text-rose-400">{errors.state}</p>}
                 </div>
 
@@ -239,7 +310,7 @@ const PredictionsPage = () => {
                     value={formData.category}
                   >
                     <option value="" disabled>
-                      Select category
+                      Select the plant category
                     </option>
                     {CATEGORIES.map((category) => (
                       <option key={category} value={category} className="bg-slate-900">
@@ -247,6 +318,7 @@ const PredictionsPage = () => {
                       </option>
                     ))}
                   </select>
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.category}</p>
                   {errors.category && <p className="mt-1 text-sm text-rose-400">{errors.category}</p>}
                 </div>
               </div>
@@ -259,11 +331,14 @@ const PredictionsPage = () => {
                   <input
                     name="total_capacity"
                     type="number"
+                    min="0"
+                    step="any"
                     className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-400/40 focus:bg-white/10"
-                    placeholder="800"
+                    placeholder="800 MW"
                     onChange={handleChange}
                     value={formData.total_capacity}
                   />
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.total_capacity}</p>
                   {errors.total_capacity && <p className="mt-1 text-sm text-rose-400">{errors.total_capacity}</p>}
                 </div>
 
@@ -278,6 +353,7 @@ const PredictionsPage = () => {
                     onChange={handleChange}
                     value={formData.commissioning_date}
                   />
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.commissioning_date}</p>
                   {errors.commissioning_date && <p className="mt-1 text-sm text-rose-400">{errors.commissioning_date}</p>}
                 </div>
               </div>
@@ -290,11 +366,14 @@ const PredictionsPage = () => {
                   <input
                     name="so2_norms"
                     type="number"
+                    min="0"
+                    step="any"
                     className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-400/40 focus:bg-white/10"
-                    placeholder="200"
+                    placeholder="200 mg/Nm3"
                     onChange={handleChange}
                     value={formData.so2_norms}
                   />
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.so2_norms}</p>
                   {errors.so2_norms && <p className="mt-1 text-sm text-rose-400">{errors.so2_norms}</p>}
                 </div>
 
@@ -305,11 +384,14 @@ const PredictionsPage = () => {
                   <input
                     name="prior_avg_so2"
                     type="number"
+                    min="0"
+                    step="any"
                     className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-400/40 focus:bg-white/10"
-                    placeholder="623"
+                    placeholder="623 mg/Nm3"
                     onChange={handleChange}
                     value={formData.prior_avg_so2}
                   />
+                  <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.prior_avg_so2}</p>
                   {errors.prior_avg_so2 && <p className="mt-1 text-sm text-rose-400">{errors.prior_avg_so2}</p>}
                 </div>
               </div>
@@ -321,11 +403,14 @@ const PredictionsPage = () => {
                 <input
                   name="unit_no"
                   type="number"
+                  min="1"
+                  step="1"
                   className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-white outline-none transition placeholder:text-slate-500 focus:border-emerald-400/40 focus:bg-white/10"
                   placeholder="1"
                   onChange={handleChange}
                   value={formData.unit_no}
                 />
+                <p className="mt-1 text-xs leading-5 text-slate-500">{FIELD_GUIDE.unit_no}</p>
                 {errors.unit_no && <p className="mt-1 text-sm text-rose-400">{errors.unit_no}</p>}
               </div>
 
