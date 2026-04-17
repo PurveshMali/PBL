@@ -19,6 +19,8 @@ import RegisterPage from "./pages/RegisterPage";
 import ForgotPassword from "./pages/ForgotPassword";
 import PredictionsPage from "./pages/PredictionsPage";
 import ProtectedRoutes from "./components/utils/ProtectedRoutes";
+import ReportsPage from "./pages/ReportsPage";
+import AnalyticsPage from "./pages/AnalyticsPage";
 
 const OverviewPage = lazy(() => import("./pages/OverviewPage"));
 const App = () => {
@@ -61,6 +63,8 @@ const App = () => {
           <Route path="/overview" element={<OverviewPage />} />
           <Route path="/impacts" element={<ImpactPage />} />
           <Route path="/predictions" element={<PredictionsPage />} />
+          <Route path="/reports" element={<ReportsPage />} />
+          <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           
         </Route>
