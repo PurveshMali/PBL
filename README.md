@@ -1,42 +1,93 @@
-# SO₂ Emission Prediction Web Application
+# SO2 Emission Prediction Platform
 
-A team-based machine learning web application designed to predict sulfur dioxide (SO₂) emissions from coal-based power plants in India. The model utilizes operational and environmental parameters to provide real-time emission estimates, supporting cleaner energy practices and compliance evaluation.
+This repository contains a full-stack dashboard for analyzing emissions and predicting plant-level SO2 output using real CSV data from the project workspace. The app combines a React dashboard, a Flask analytics API, a Node/Express auth service, and a Flask prediction service backed by a trained scikit-learn model.
 
-## 🚀 Features
+## What's Included
 
-- 🔍 ML-based prediction using XGBoost
-- ⚙️ Hyperparameter optimization with Optuna
-- 🌐 RESTful API built with FastAPI
-- 📦 Dockerized for cross-platform deployment
-- 🧩 Modular codebase with logging and validation
-- 💻 Frontend integration (HTML/CSS/JS)
+- Premium React/Vite dashboard for overview, insights, impacts, settings, and predictions
+- Real plant-level SO2 prediction model trained on the repository CSV data
+- Express auth service with MongoDB integration and AI insights endpoint
+- Flask analytics API for charts, state summaries, and totals
+- In-depth project report in [MODEL_REPORT.md](MODEL_REPORT.md)
 
-## 📊 Model Overview
+## Tech Stack
 
-- **Model Used:** XGBoost Regressor
-- **Tuning:** Optuna
-- **Inputs:** Calorific value, thermal efficiency, CO₂ levels, and more
-- **Output:** Predicted SO₂ emission (in mg/Nm³)
+- Frontend: React, Vite, Tailwind CSS, Framer Motion, Recharts
+- Auth service: Node.js, Express, MongoDB, JWT
+- Analytics API: Python, Flask, pandas
+- Prediction service: Python, Flask, scikit-learn, joblib
+- AI integrations: Hugging Face and Gemini-powered insights endpoints
 
-## 🛠️ Tech Stack
+## Service Ports
 
-- Python
-- FastAPI
-- XGBoost
-- Optuna
-- Docker
-- HTML, CSS, JavaScript (for UI)
+- Frontend: `5173` by default
+- Auth service: `3001`
+- Analytics API: `5000`
+- Prediction API: `8081`
 
-## 📦 How to Run Locally
+## Local Setup
 
-```bash
-# Clone the repository
-git clone https://github.com/PurveshMali/PBL
-cd PBL
+### 1. Install dependencies
 
-# Build and run using Docker
-docker build -t so2-predictor .
-docker run -p 8000:8000 so2-predictor
+```powershell
+# Frontend
+cd frontend
+npm install
 
-# Visit the app at:
-http://localhost:8000/docs
+# Auth service
+cd ..\Auth
+npm install
+
+# Python environment
+cd ..
+.\.venv\Scripts\Activate.ps1
+pip install -r Backend\requirements.txt
+pip install pandas numpy scikit-learn joblib python-dotenv google-generativeai openai
+```
+
+### 2. Configure environment variables
+
+Create a root `.env` file with the values used by the services:
+
+- `MONGO_URI` for the auth service
+- `HF_API_KEY` for the Hugging Face insights endpoint
+- `API_KEY` for the Gemini insights endpoint
+
+### 3. Run the services
+
+Open separate terminals and start each service from its own folder:
+
+```powershell
+# Auth service
+cd Auth
+node app.js
+
+# Analytics API
+cd Backend
+python app.py
+
+# Prediction API
+cd Model
+python so2_model.py
+
+# Frontend
+cd frontend
+npm run dev
+```
+
+### 4. Open the app
+
+- Frontend dashboard: `http://localhost:5173`
+- Auth API: `http://localhost:3001`
+- Analytics API: `http://localhost:5000`
+- Prediction API: `http://localhost:8081`
+
+## Project Notes
+
+- The old synthetic SO2 flow was replaced with a real plant-level model.
+- The prediction page now shows validation quality alongside the forecast result.
+- The dashboard styling was upgraded to a consistent premium visual system.
+
+## Interview Prep
+
+The report file includes architecture notes, model details, edge cases, and interview questions you can use during project presentation.

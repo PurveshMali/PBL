@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import os
+import sys
+import types
 from pathlib import Path
 
 import joblib
@@ -17,6 +19,13 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 app = Flask(__name__)
 CORS(app)
+
+model_package = sys.modules.get("Model")
+if model_package is None:
+    model_package = types.ModuleType("Model")
+    model_package.__path__ = [str(Path(__file__).resolve().parent)]
+    sys.modules["Model"] = model_package
+sys.modules.setdefault("Model.so2_model", sys.modules[__name__])
 
 BASE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = BASE_DIR.parent
@@ -339,4 +348,4 @@ def train():
 if __name__ == "__main__":
     if not os.environ.get("WERKZEUG_RUN_MAIN"):
         pass
-    app.run(debug=True, port=8080)
+    app.run(debug=True, port=8081)

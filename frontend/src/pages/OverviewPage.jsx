@@ -22,7 +22,7 @@ const OverviewPage = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found");
 
-        await axios.get("http://localhost:3000/api/auth/validate", {
+        await axios.get("http://localhost:3001/api/auth/validate", {
           headers: { Authorization: `Bearer ${token}` },
         });
 

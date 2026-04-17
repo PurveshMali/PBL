@@ -20,7 +20,7 @@ const Profile = () => {
     const fetchUser = async () => {
       try {
         const { data } = await axios.get(
-          "http://localhost:3000/api/auth/profile",
+          "http://localhost:3001/api/auth/profile",
           {
             headers: {
               Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -50,7 +50,7 @@ const Profile = () => {
     setLoading(true); // Show the loader
 
     try {
-      await axios.post("http://localhost:3000/api/auth/logout");
+      await axios.post("http://localhost:3001/api/auth/logout");
       localStorage.removeItem("token");
       toast.success("Logged out successfully!", {
         position: "top-right",
@@ -75,7 +75,7 @@ const Profile = () => {
 
   const handleProfileUpdate = async () => {
     try {
-      await axios.put("http://localhost:3000/api/auth/profile", updatedUser);
+      await axios.put("http://localhost:3001/api/auth/profile", updatedUser);
       toast.success("Profile updated successfully!");
       setEditProfile(false);
     } catch (error) {

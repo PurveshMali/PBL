@@ -70,7 +70,7 @@ const PredictionsPage = () => {
     setModelMetrics(null);
 
     try {
-      const response = await axios.post("http://127.0.0.1:8080/predict", {
+      const response = await axios.post("http://127.0.0.1:8081/predict", {
         state: formData.state,
         category: formData.category,
         total_capacity: Number(formData.total_capacity),

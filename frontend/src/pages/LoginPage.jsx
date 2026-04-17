@@ -21,7 +21,7 @@ const LoginPage = () => {
       const token = localStorage.getItem("token")
       if (token) {
         try {
-          await axios.get("http://localhost:3000/api/auth/validate", {
+          await axios.get("http://localhost:3001/api/auth/validate", {
             headers: { Authorization: `Bearer ${token}` },
           })
           navigate("/overview")
@@ -47,7 +47,7 @@ const LoginPage = () => {
 
     try {
       setIsValidating(true)
-      const { data } = await axios.post("http://localhost:3000/api/auth/login", credentials)
+      const { data } = await axios.post("http://localhost:3001/api/auth/login", credentials)
       localStorage.setItem("token", data.token)
       toast.success("Login successful!")
 
