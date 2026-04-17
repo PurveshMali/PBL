@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import axios from "axios";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import { authRequest } from "../config/api";
 
 const RegisterPage = () => {
   const navigate = useNavigate();
@@ -90,16 +90,17 @@ const RegisterPage = () => {
 
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        "http://localhost:3001/api/auth/register",
-        {
+      const response = await authRequest({
+        method: "post",
+        path: "/api/auth/register",
+        data: {
           firstName: formData.firstName,
           lastName: formData.lastName,
           email: formData.email,
           mobile: formData.mobile,
           password: formData.password,
-        }
-      );
+        },
+      });
 
       if (response.status === 201) {
         alert("User registered successfully!");

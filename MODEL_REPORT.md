@@ -345,3 +345,248 @@ This project is strongest when you present it as a full-stack emissions intellig
 - A clean, interview-ready story about data cleaning, feature engineering, validation, and product thinking.
 
 That combination is more compelling than a simple model demo because it shows both technical depth and product judgment.
+
+## 16. Backend Model Logic Deep Dive
+
+This section explains the exact backend model logic from request entry to response payload.
+
+### 16.1 Runtime and Files
+
+- Main model service file: `Model/so2_model.py`
+- Training data source: `data/Indian-Air-Pollutiionupdated.csv`
+- Serialized artifact: `so2_trained_model.pkl`
+- Service port: `8081`
+- Training target: `Average SO2 (mg/Nm3) - 2024-25`
+
+### 16.2 Data Cleaning Logic
+
+The model uses strict cleaning before any training:
+
+1. Column normalization:
+   - Strip whitespace from headers and categorical text fields.
+
+2. Robust numeric parsing:
+   - `_numeric_series(...)` converts numeric-like strings to floats.
+   - Handles comma separators and invalid tokens such as `NA` and `*`.
+
+3. Date parsing:
+   - `Date of Commissioning` is parsed using `dayfirst=True`.
+
+4. Required-row filtering:
+   - Rows missing essential training columns are dropped.
+
+5. Missing-value strategy:
+   - `prior_avg_so2` and `unit_no` are median-imputed.
+
+6. Outlier protection:
+   - 1st/99th percentile clipping on key numeric fields reduces distortion from extreme entries.
+
+### 16.3 Feature Engineering Logic
+
+Input fields are transformed into operationally meaningful predictors:
+
+- `plant_age_years`: years since commissioning relative to 2025-01-01
+- `commission_year` and `commission_month`
+- `capacity_per_unit = total_capacity / max(unit_no, 1)`
+- `capacity_to_norm_ratio = total_capacity / max(so2_norms, 1)`
+- `norm_gap = prior_avg_so2 - so2_norms`
+
+These features encode scale, compliance pressure, plant maturity, and historical behavior.
+
+### 16.4 Training Pipeline Logic
+
+The model class `PlantSO2Model` uses a scikit-learn pipeline:
+
+1. `ColumnTransformer`
+   - Numeric columns -> `StandardScaler`
+   - Categorical columns -> `OneHotEncoder(handle_unknown="ignore")`
+
+2. Regressor
+   - `ExtraTreesRegressor(n_estimators=800, random_state=42, min_samples_leaf=1, n_jobs=-1)`
+
+3. Validation
+   - `train_test_split(test_size=0.2, random_state=42, shuffle=True)`
+
+4. Metrics
+   - MAE, RMSE, MAPE, R²
+
+5. Artifact bundle
+   - stores version, trained model, metrics, feature list, and feature importances
+
+### 16.5 Prediction Logic
+
+The `/predict` endpoint does:
+
+1. Load model artifact bundle
+2. Validate payload shape and data types via `build_feature_frame(...)`
+3. Compute engineered features
+4. Run model inference
+5. Clamp predictions to non-negative values
+6. Return prediction + metrics + top feature importances
+
+### 16.6 API Contracts
+
+#### `/predict` (POST)
+
+- Input: 7 raw plant fields (`state`, `category`, `total_capacity`, `commissioning_date`, `so2_norms`, `prior_avg_so2`, `unit_no`)
+- Success output:
+  - `predicted_so2_emissions`
+  - `model_metrics`
+  - `feature_importances`
+- Error output:
+  - `{"error": "...message..."}`
+
+#### `/train` (POST)
+
+- Retrains model from current CSV
+- Overwrites artifact with increment-compatible bundle
+- Returns current validation metrics and feature importances
+
+## 17. How We Solved Major Problems
+
+This project required multiple rounds of debugging and architecture hardening.
+
+### 17.1 Synthetic-to-Real Migration
+
+Problem:
+- Earlier flow relied on synthetic data and schema assumptions that did not match real CSVs.
+
+Resolution:
+- Switched training to real plant-level data.
+- Rebuilt feature engineering around actual available columns.
+- Aligned frontend prediction form with backend model contract.
+
+### 17.2 Model Artifact Import Failure (`ModuleNotFoundError: Model`)
+
+Problem:
+- Serialized artifact referenced `Model.so2_model` in pickle namespace, but runtime import context differed.
+
+Resolution:
+- Added module/package alias shims in `so2_model.py` using `sys.modules` and `types.ModuleType`.
+- This stabilized artifact loading for local script execution.
+
+### 17.3 Port Collisions and Service Availability
+
+Problem:
+- Common local ports (5173, 3000, 8080) were already in use by unrelated processes.
+
+Resolution:
+- Moved model service to `8081`.
+- Moved auth service to `3001`.
+- Added frontend API fallback logic to try configured and known local ports.
+
+### 17.4 Login Failure
+
+Problem:
+- Auth login failed because `JWT_SECRET` was undefined in local runtime.
+
+Resolution:
+- Added a local-development fallback JWT secret in auth routes.
+- Restarted service and validated token issuance.
+
+### 17.5 Settings/Profile Page Failure
+
+Problem:
+- Frontend called wrong update route and sent incomplete/misaligned form state.
+
+Resolution:
+- Corrected update route to `/api/auth/profile/edit`.
+- Added Authorization headers for profile update.
+- Fixed modal input names and state prefill logic.
+
+## 18. Edge Case Matrix and Expected Behavior
+
+### 18.1 Input Validation Edge Cases
+
+1. Missing required fields
+   - Expected: 4xx-style error payload from model validation path.
+
+2. Invalid date format for commissioning date
+   - Expected: prediction error with clear message.
+
+3. Non-numeric capacity/norm/prior SO2/unit values
+   - Expected: type coercion failure caught and returned as error.
+
+4. Zero/negative values for capacity, norms, or unit number
+   - Expected: explicit validation failure.
+
+### 18.2 Data Quality Edge Cases
+
+1. `NA` / `*` textual placeholders in numeric columns
+2. Missing prior-year SO2 values
+3. Extreme outliers from measurement/data entry
+4. Duplicate project rows
+
+Handling:
+- Numeric sanitization, median imputation, and quantile clipping.
+
+### 18.3 Inference Edge Cases
+
+1. Unseen state/category labels
+   - Handled by `OneHotEncoder(handle_unknown="ignore")`.
+
+2. Model artifact missing/outdated
+   - `/predict` returns explicit artifact error.
+
+3. Backend unavailable from frontend
+   - Frontend fallback API base strategy attempts alternate local endpoints.
+
+### 18.4 Auth Edge Cases
+
+1. Missing token on protected endpoints
+   - Returns unauthorized response.
+
+2. Expired/invalid token
+   - Returns invalid token response.
+
+3. Session mismatch in frontend localStorage
+   - Frontend clears token and redirects to login.
+
+## 19. Frontend Reliability Logic Added
+
+To make pages consistently work across local machine differences:
+
+1. Added `frontend/src/config/api.js`.
+2. Defined fallback bases for:
+   - Auth API
+   - Analytics API
+   - Prediction API
+3. Implemented `requestWithFallback(...)`:
+   - iterates through configured bases
+   - fails over on transport/server errors
+   - returns fast on deterministic client errors
+4. Refactored key pages/components to use shared request helpers.
+
+Result:
+- Fewer hardcoded single-point URL failures.
+- Better resilience when ports differ across local setups.
+
+## 20. Operational Runbook (Local)
+
+Use this startup order for stable local runs:
+
+1. Start MongoDB (`27017`)
+2. Start Auth service (`3001`)
+3. Start Analytics API (`5000`)
+4. Start Prediction API (`8081`)
+5. Start Frontend (`5173`)
+
+Quick smoke checks:
+
+- Auth login returns JWT
+- Profile fetch succeeds with bearer token
+- Overview endpoints return numeric/chart JSON
+- Prediction endpoint returns SO2 value and metrics
+
+## 21. Remaining Hardening Opportunities
+
+1. Remove password hash from auth response payloads.
+2. Move all secrets to `.env` and enforce startup validation.
+3. Add schema validation middleware for all incoming payloads.
+4. Add structured logs and request IDs across services.
+5. Add automated tests for:
+   - model feature-frame validation
+   - auth login/profile routes
+   - frontend API fallback helper
+
+This appendix can be used directly in technical interviews to explain not just the final architecture, but the engineering reasoning and debugging discipline that made the system stable.

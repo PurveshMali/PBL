@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from "recharts";
+import { analyticsRequest } from "../../config/api";
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 
@@ -8,10 +9,9 @@ const CategoryDistributionChart = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/api/totalpiechart")
-      .then((response) => response.json())
-      .then((apiData) => {
-        setData(apiData); // Use API data directly
+    analyticsRequest({ method: "get", path: "/api/totalpiechart" })
+      .then((response) => {
+        setData(response.data);
       })
       .catch((error) => console.error("Error fetching pie data:", error));
   }, []);

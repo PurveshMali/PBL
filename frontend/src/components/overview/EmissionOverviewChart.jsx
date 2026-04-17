@@ -9,6 +9,7 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { motion } from "framer-motion";
+import { analyticsRequest } from "../../config/api";
 
 const EmissionOverviewChart = () => {
   // State to hold the emission data
@@ -18,9 +19,8 @@ const EmissionOverviewChart = () => {
   useEffect(() => {
     const fetchEmissionData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/call-emmision"); // Your Flask API endpoint
-        const data = await response.json();
-        console.log(response);
+        const response = await analyticsRequest({ method: "get", path: "/api/call-emmision" });
+        const data = response.data;
         // Transform the data to match the required format
         const formattedData = data.map((item) => ({
           name: item.State, // Assuming "State" is the column for names

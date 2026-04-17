@@ -6,12 +6,11 @@ import StatCard from "../components/common/StatCard";
 import { motion } from "framer-motion";
 import EmissionOverviewChart from "../components/overview/EmissionOverviewChart";
 import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import axios from "axios";
 import StateEmission from "../components/overview/StateEmission";
+import { analyticsRequest, authRequest } from "../config/api";
 
 const OverviewPage = () => {
   const navigate = useNavigate();
-  const [isValidUser, setIsValidUser] = useState(false);
   const [totalValue, setTotalValue] = useState(0); // ✅ Default 0 instead of null
   const [totalPlants, setTotalPlants] = useState(0);
 
@@ -22,11 +21,11 @@ const OverviewPage = () => {
         const token = localStorage.getItem("token");
         if (!token) throw new Error("No token found");
 
-        await axios.get("http://localhost:3001/api/auth/validate", {
+        await authRequest({
+          method: "get",
+          path: "/api/auth/validate",
           headers: { Authorization: `Bearer ${token}` },
         });
-
-        setIsValidUser(true);
       } catch (error) {
         alert("Invalid session! Redirecting to login...");
         localStorage.removeItem("token");
@@ -42,8 +41,8 @@ const OverviewPage = () => {
     const fetchEmissionData = async () => {
       try {
         const [emissionRes, plantsRes] = await Promise.all([
-          axios.get("http://127.0.0.1:5000/api/totalemmision"),
-          axios.get("http://127.0.0.1:5000/api/totalplants"),
+          analyticsRequest({ method: "get", path: "/api/totalemmision" }),
+          analyticsRequest({ method: "get", path: "/api/totalplants" }),
         ]);
 
         setTotalValue(emissionRes.data);

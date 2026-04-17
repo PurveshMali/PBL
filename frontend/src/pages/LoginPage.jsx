@@ -1,12 +1,12 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { delay, motion } from "framer-motion"
+import { motion } from "framer-motion"
 import { Link, useNavigate } from "react-router-dom"
-import axios from "axios"
 import { toast, ToastContainer } from "react-toastify"
 import "react-toastify/dist/ReactToastify.css"
-import { Loader, Loader2 } from "lucide-react"
+import { Loader } from "lucide-react"
+import { authRequest } from "../config/api"
 
 const LoginPage = () => {
   const [credentials, setCredentials] = useState({ email: "", password: "" })
@@ -21,7 +21,9 @@ const LoginPage = () => {
       const token = localStorage.getItem("token")
       if (token) {
         try {
-          await axios.get("http://localhost:3001/api/auth/validate", {
+          await authRequest({
+            method: "get",
+            path: "/api/auth/validate",
             headers: { Authorization: `Bearer ${token}` },
           })
           navigate("/overview")
@@ -47,7 +49,11 @@ const LoginPage = () => {
 
     try {
       setIsValidating(true)
-      const { data } = await axios.post("http://localhost:3001/api/auth/login", credentials)
+      const { data } = await authRequest({
+        method: "post",
+        path: "/api/auth/login",
+        data: credentials,
+      })
       localStorage.setItem("token", data.token)
       toast.success("Login successful!")
 

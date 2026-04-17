@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight, Loader, Zap } from "lucide-react";
-import axios from "axios";
 
 import Header from "../components/common/Header";
 import PredictionsResult from "../components/predictions/PredictionsResult";
 import AIPoweredInsights from "../components/predictions/AIPoweredInsights";
+import { predictionRequest } from "../config/api";
 
 const STATES = [
   "Andhra Pradesh",
@@ -43,6 +43,7 @@ const PredictionsPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState(null);
   const [modelMetrics, setModelMetrics] = useState(null);
+  const [apiError, setApiError] = useState("");
 
   const handleChange = (event) => {
     const { name, value } = event.target;
@@ -68,23 +69,37 @@ const PredictionsPage = () => {
     setIsLoading(true);
     setResult(null);
     setModelMetrics(null);
+    setApiError("");
+
+    const payload = {
+      state: formData.state,
+      category: formData.category,
+      total_capacity: Number(formData.total_capacity),
+      commissioning_date: formData.commissioning_date,
+      so2_norms: Number(formData.so2_norms),
+      prior_avg_so2: Number(formData.prior_avg_so2),
+      unit_no: Number(formData.unit_no),
+    };
 
     try {
-      const response = await axios.post("http://127.0.0.1:8081/predict", {
-        state: formData.state,
-        category: formData.category,
-        total_capacity: Number(formData.total_capacity),
-        commissioning_date: formData.commissioning_date,
-        so2_norms: Number(formData.so2_norms),
-        prior_avg_so2: Number(formData.prior_avg_so2),
-        unit_no: Number(formData.unit_no),
+      const response = await predictionRequest({
+        method: "post",
+        path: "/predict",
+        data: payload,
       });
 
-      setResult(response.data.predicted_so2_emissions);
+      if (response.data?.error) {
+        throw new Error(response.data.error);
+      }
+
+      setResult(response.data.predicted_so2_emissions ?? null);
       setModelMetrics(response.data.model_metrics || null);
     } catch (error) {
       console.error("Error fetching prediction:", error);
-      alert("Failed to fetch prediction. Please try again.");
+      const message =
+        error?.message ||
+        "Prediction request failed. Verify the model service is running and try again.";
+      setApiError(message);
     } finally {
       setIsLoading(false);
     }
@@ -184,6 +199,12 @@ const PredictionsPage = () => {
             </div>
 
             <form className="mt-6 flex flex-col gap-4" onSubmit={handleSubmit}>
+              {apiError && (
+                <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-200">
+                  {apiError}
+                </div>
+              )}
+
               <div className="grid gap-4 sm:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">

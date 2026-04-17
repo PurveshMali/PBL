@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from "recharts";
+import { analyticsRequest } from "../../config/api";
 
 const COLORS = ["#6366F1", "#8B5CF6", "#EC4899", "#10B981", "#F59E0B"];
 
@@ -11,8 +12,8 @@ const StateEmission = () => {
   useEffect(() => {
     const fetchEmissionData = async () => {
       try {
-        const response = await fetch("http://127.0.0.1:5000/api/call-emmisionofstates"); // Your Flask API endpoint
-        const data = await response.json();
+        const response = await analyticsRequest({ method: "get", path: "/api/call-emmisionofstates" });
+        const data = response.data;
         console.log("API Response:", data); // Debugging
 
         // Transform the data to match the required format

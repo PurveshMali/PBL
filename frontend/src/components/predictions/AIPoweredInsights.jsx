@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { motion } from "framer-motion";
 import { Activity, Flame, TrendingUp, Wind, GaugeCircle } from "lucide-react";
+import { analyticsRequest } from "../../config/api";
 
 const getInsightStyle = (title) => {
   const normalized = title.toLowerCase();
@@ -26,8 +26,7 @@ const AIPoweredInsights = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios
-      .get("http://127.0.0.1:5000/get-insights")
+    analyticsRequest({ method: "get", path: "/get-insights" })
       .then((response) => {
         // Clean up titles by trimming spaces
         const cleanedInsights = response.data.insights.map((insight) => ({

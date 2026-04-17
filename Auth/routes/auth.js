@@ -5,6 +5,7 @@ const User = require("../models/User");
 const nodemailer = require("nodemailer");
 
 const router = express.Router();
+const JWT_SECRET = process.env.JWT_SECRET || "dev-jwt-secret";
 
 // User Registration
 router.post("/register", async (req, res) => {
@@ -37,7 +38,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET, {
       expiresIn: "24h",
     });
     res.cookie("token", token, {
@@ -60,7 +61,7 @@ router.get("/validate", (req, res) => {
   const token = req.headers.authorization?.split(" ")[1]; // Extract token
   if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+  jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) return res.status(403).json({ message: "Invalid token" });
     res.json({ message: "Token is valid", user: decoded });
   });
@@ -71,7 +72,7 @@ router.get("/profile", async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token
     if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    jwt.verify(token, JWT_SECRET, async (err, decoded) => {
       if (err) return res.status(403).json({ message: "Invalid token" });
       const user = await User.findById(decoded.userId);
       if (!user) return res.status(404).json({ message: "User not found" });
@@ -87,7 +88,7 @@ router.put("/profile/edit", async (req, res) => {
     const token = req.headers.authorization?.split(" ")[1]; // Extract token
     if (!token) return res.status(401).json({ message: "Unauthorized" });
 
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decoded) => {
+    jwt.verify(token, JWT_SECRET, async (err, decoded) => {
       if (err) return res.status(403).json({ message: "Invalid token" });
 
       const { firstName, lastName, mobile } = req.body; // Editable fields

@@ -1,11 +1,11 @@
 import { User } from "lucide-react";
 import SettingSection from "./SettingSection";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toast, ToastContainer } from "react-toastify";
 import LoaderComponent from "../common/LoaderComponent";
 import { motion } from "framer-motion";
+import { authRequest } from "../../config/api";
 
 const Profile = () => {
   const [user, setUser] = useState({});
@@ -19,14 +19,13 @@ const Profile = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const { data } = await axios.get(
-          "http://localhost:3001/api/auth/profile",
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const { data } = await authRequest({
+          method: "get",
+          path: "/api/auth/profile",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
         setUser(data);
         console.log(data);
       } catch (error) {
@@ -41,6 +40,11 @@ const Profile = () => {
   };
 
   const handleEditProfileConfirmation = () => {
+    setUpdatedUser({
+      firstName: user.firstName || "",
+      lastName: user.lastName || "",
+      mobile: user.mobile || "",
+    });
     setEditProfile(true); // Show the confirmation modal
   };
 
@@ -50,7 +54,7 @@ const Profile = () => {
     setLoading(true); // Show the loader
 
     try {
-      await axios.post("http://localhost:3001/api/auth/logout");
+      await authRequest({ method: "post", path: "/api/auth/logout" });
       localStorage.removeItem("token");
       toast.success("Logged out successfully!", {
         position: "top-right",
@@ -73,9 +77,21 @@ const Profile = () => {
     }
   };
 
-  const handleProfileUpdate = async () => {
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
     try {
-      await axios.put("http://localhost:3001/api/auth/profile", updatedUser);
+      const { data } = await authRequest({
+        method: "put",
+        path: "/api/auth/profile/edit",
+        data: updatedUser,
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
+
+      if (data?.user) {
+        setUser(data.user);
+      }
       toast.success("Profile updated successfully!");
       setEditProfile(false);
     } catch (error) {
@@ -141,31 +157,45 @@ const Profile = () => {
             </p>
             <form action="">
               <input
+                name="firstName"
                 type="text"
                 placeholder="First Name"
                 onChange={(e) =>
                   handleChange(e)
                 }
-                value={updatedUser.firstName}
+                value={updatedUser.firstName || ""}
                 className="bg-gray-700 text-white py-2 px-4 rounded mb-4 w-full"
               />
               <input
+                name="lastName"
                 type="text"
-                placeholder="First Name"
+                placeholder="Last Name"
                 onChange={(e) =>
                   handleChange(e)
                 }
-                value={updatedUser.lastName}
+                value={updatedUser.lastName || ""}
+                className="bg-gray-700 text-white py-2 px-4 rounded mb-4 w-full"
+              />
+              <input
+                name="mobile"
+                type="text"
+                placeholder="Mobile"
+                onChange={(e) =>
+                  handleChange(e)
+                }
+                value={updatedUser.mobile || ""}
                 className="bg-gray-700 text-white py-2 px-4 rounded mb-4 w-full"
               />
               <div className="flex justify-between">
                 <button
+                  type="button"
                   onClick={() => setEditProfile(false)}
                   className="bg-gray-300 text-gray-800 py-2 px-4 rounded hover:bg-gray-400"
                 >
                   Cancel
                 </button>
                 <button
+                  type="button"
                   onClick={handleProfileUpdate}
                   className="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700"
                 >
