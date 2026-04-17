@@ -63,18 +63,21 @@ const ImpactOverview = () => {
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700 mb-8"
+      className="mb-8 rounded-[2rem] border border-white/10 bg-slate-950/75 p-6 shadow-[0_30px_80px_rgba(2,6,23,0.45)] backdrop-blur-xl"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-100">
+        <div>
+          <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400">Impact</p>
+          <h2 className="mt-2 text-xl font-semibold text-white">
           Health Impact Overview
-        </h2>
+          </h2>
+        </div>
 
         <select
-          className="bg-gray-700 text-white rounded-md px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-slate-200 outline-none focus:border-emerald-400/40"
           value={selectedFuel}
           onChange={(e) => setSelectedFuel(e.target.value)}
         >
@@ -93,10 +96,11 @@ const ImpactOverview = () => {
             <YAxis stroke="#9CA3AF" />
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(31, 41, 55, 0.8)",
-                borderColor: "#4B5563",
+                backgroundColor: "rgba(15, 23, 42, 0.95)",
+                borderColor: "rgba(255,255,255,0.08)",
+                borderRadius: "16px",
               }}
-              itemStyle={{ color: "#E5E7EB" }}
+              itemStyle={{ color: "#E2E8F0" }}
             />
             <Legend
               verticalAlign="bottom"

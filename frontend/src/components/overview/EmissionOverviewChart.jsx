@@ -39,12 +39,15 @@ const EmissionOverviewChart = () => {
 
   return (
     <motion.div
-      className="bg-gray-800 bg-opacity-50 backdrop-blur-md shadow-lg rounded-xl p-6 border border-gray-700"
+      className="rounded-[2rem] border border-white/10 bg-slate-950/75 p-6 shadow-[0_30px_80px_rgba(2,6,23,0.45)] backdrop-blur-xl"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <h2 className="text-lg font-medium mb-4 text-gray-100">Yearly Emission Overview of States (2024-25)</h2>
+      <div className="mb-5">
+        <p className="text-[11px] uppercase tracking-[0.35em] text-slate-400">Overview</p>
+        <h2 className="mt-2 text-lg font-semibold text-white">Yearly Emission Overview of States (2024-25)</h2>
+      </div>
 
       <div className="h-80">
         <ResponsiveContainer width={"100%"} height={"100%"}>
@@ -54,17 +57,18 @@ const EmissionOverviewChart = () => {
             <YAxis stroke="#9ca3af" />
             <Tooltip
               contentStyle={{
-                backgroundColor: "rgba(31, 41, 55, 0.8)",
-                borderColor: "#4B5563",
+                backgroundColor: "rgba(15, 23, 42, 0.95)",
+                borderColor: "rgba(255,255,255,0.08)",
+                borderRadius: "16px",
               }}
-              itemStyle={{ color: "#E5E7EB" }}
+              itemStyle={{ color: "#E2E8F0" }}
             />
             <Line
               type="monotone"
               dataKey="emission"
-              stroke="#6366F1"
+              stroke="#10b981"
               strokeWidth={3}
-              dot={{ fill: "#6366F1", strokeWidth: 2, r: 6 }}
+              dot={{ fill: "#10b981", strokeWidth: 2, r: 6 }}
               activeDot={{ r: 8, strokeWidth: 2 }}
             />
           </LineChart>
