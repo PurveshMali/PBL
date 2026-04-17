@@ -8,7 +8,7 @@ const cookieParser = require("cookie-parser");
 dotenv.config();
 const app = express();
 
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3002;
 
 // Middleware
 app.use(express.json());
@@ -42,10 +42,14 @@ app.get("/insights", async (req, res) => {
   }
 });
 
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("MongoDB Connected"))
-  .catch((err) => console.log(err));
+// Connect to MongoDB when a URI is available.
+if (process.env.MONGO_URI) {
+  mongoose
+    .connect(process.env.MONGO_URI)
+    .then(() => console.log("MongoDB Connected"))
+    .catch((err) => console.log(err));
+} else {
+  console.warn("MONGO_URI is not set; auth routes will start, but database-backed features will be unavailable.");
+}
 
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

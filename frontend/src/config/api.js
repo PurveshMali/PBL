@@ -10,6 +10,7 @@ const joinUrl = (base, path) => {
 
 export const AUTH_API_BASES = uniqueBases([
   import.meta.env.VITE_AUTH_API_URL,
+  "http://localhost:3002",
   "http://localhost:3001",
   "http://localhost:3000",
 ]);
